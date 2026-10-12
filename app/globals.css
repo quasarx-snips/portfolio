@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/*
+  ============================================================
+  DESIGN TOKENS  —  locked palette (do not drift)
+  ------------------------------------------------------------
+  text        #FCFCF9  warm off-white   body + headings
+  background  #381919  deep burgundy    page canvas
+  primary     #ed7878  coral            CTAs, links, focus
+  secondary   #f6d0d0  pale pink        soft highlights
+  accent      #e58f8f  dusty rose       dividers, hover states
+  ============================================================
+*/
+:root {
+  /* core palette */
+  --text: #fcfcf9;
+  --background: #381919;
+  --primary: #ed7878;
+  --secondary: #f6d0d0;
+  --accent: #e58f8f;
+
+  /* derived surfaces — one consistent elevation ramp */
+  --surface: #442020; /* card / panel fill, one step up from bg */
+  --surface-raised: #4f2626; /* hovered card fill */
+  --border: #5c2f2f; /* hairline divider */
+  --border-strong: #6d3838; /* emphasised divider */
+  --muted: #c9a9a9; /* secondary body copy on burgundy */
+  --muted-strong: #e5c9c9; /* labels, meta text */
+}
+
+@theme inline {
+  /* map the palette into Tailwind so `bg-background`, `text-primary` etc. exist */
+  --color-text: var(--text);
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-muted-strong: var(--muted-strong);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* motion tokens — keeps durations/easings consistent everywhere */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* offset for the sticky header when jumping to #anchors */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* visible, on-brand focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    color: var(--text);
+  }
+
+  /* thin scrollbar that matches the palette */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+    border: 2px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+}
+
+@layer utilities {
+  /* section eyebrow — small mono label above a heading */
+  .eyebrow {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+
+  /* faint grid used behind the hero */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--text) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--text) 6%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* fades the grid out toward the edges + bottom */
+  .mask-fade-edges {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  /* gradient text for the accent word in the hero headline */
+  .text-gradient {
+    background-image: linear-gradient(100deg, var(--secondary), var(--primary) 55%, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/*
+  Accessibility: honour the OS "reduce motion" setting. Every animation in this
+  site is decorative, so disabling them entirely is safe and correct.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
