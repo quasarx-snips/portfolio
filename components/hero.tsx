@@ -1,24 +1,38 @@
+"use client";
+
 import Image from "next/image";
-import { NeuralBackground } from "@/components/neural-background";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { Aurora } from "@/components/aurora";
+import { ParticleField } from "@/components/particle-field";
 import { MagneticButton } from "@/components/magnetic-button";
 import { FadeIn, TextReveal } from "@/components/motion-primitives";
 import { site, techStack } from "@/lib/site.config";
 
 /**
- * Hero — the Aceternity "hero with grid background" layout, re-skinned.
+ * Hero — the "hero with grid background" layout, re-skinned.
  *
  * Layering, back to front:
  *   1. .bg-grid        faint 56px grid
- *   2. /blob.svg       Haikei-style organic blob at 40% opacity
- *   3. NeuralBackground particle canvas at 30% opacity (desktop only)
- *   4. content
+ *   2. Aurora          three drifting gradient blobs (CSS keyframes)
+ *   3. /blob.svg       warped Haikei-style blob
+ *   4. ParticleField   flow-field particles + cursor links (desktop only)
+ *   5. content
+ *
+ * The whole content block parallaxes up and fades as you scroll away, using
+ * motion's useScroll (which reads the native scroll position, no listeners).
  */
 export function Hero() {
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const contentY = useTransform(scrollYProgress, [0, 0.25], [0, -110]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+
   return (
     <section id="top" className="relative isolate overflow-hidden">
       {/* ---------- background layers ---------- */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="bg-grid mask-fade-edges absolute inset-0 opacity-70" />
+        <Aurora />
         <Image
           src="/blob.svg"
           alt=""
@@ -27,13 +41,17 @@ export function Hero() {
           priority
           className="absolute left-1/2 top-[-18rem] h-[46rem] w-[46rem] max-w-none -translate-x-1/2 opacity-40 blur-2xl"
         />
-        <NeuralBackground className="absolute inset-0 h-full w-full opacity-30" />
+        <ParticleField className="absolute inset-0 h-full w-full opacity-70" />
         {/* blends the bottom of the hero into the page background */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
 
+
       {/* ---------- content ---------- */}
-      <div className="mx-auto max-w-6xl px-6 pb-28 pt-24 sm:px-8 sm:pb-36 sm:pt-36">
+      <motion.div
+        style={reduceMotion ? undefined : { y: contentY, opacity: contentOpacity }}
+        className="mx-auto max-w-6xl px-6 pb-28 pt-24 sm:px-8 sm:pb-36 sm:pt-36"
+      >
         {site.status.available ? (
           <FadeIn className="mb-8">
             <span className="inline-flex items-center gap-2.5 rounded-full border border-border-strong bg-surface/60 px-3.5 py-1.5 text-xs text-muted-strong backdrop-blur-sm">
@@ -101,7 +119,7 @@ export function Hero() {
             ))}
           </ul>
         </FadeIn>
-      </div>
+      </motion.div>
     </section>
   );
 }

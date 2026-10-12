@@ -15,7 +15,7 @@ export function About() {
         </FadeIn>
 
         <FadeIn delay={0.15}>
-          <dl className="divide-y divide-border border-y border-border">
+          <dl className="divide-y divide-border border-y border-border-strong">
             {[
               { label: "Focus", value: "Machine learning + interfaces" },
               { label: "Studying", value: "Math & Computer Science" },

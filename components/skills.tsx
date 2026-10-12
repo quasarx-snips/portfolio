@@ -64,7 +64,7 @@ export function Skills() {
       <div className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-3">
         {skillGroups.map((group, i) => (
           <FadeIn key={group.label} delay={i * 0.1}>
-            <h3 className="mb-7 border-b border-border pb-3 font-mono text-xs tracking-[0.18em] text-primary uppercase">
+            <h3 className="mb-7 border-b border-border-strong pb-3 font-mono text-xs tracking-[0.18em] text-primary uppercase">
               {group.label}
             </h3>
             <div className="space-y-6">

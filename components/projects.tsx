@@ -1,4 +1,6 @@
 import { FadeIn } from "@/components/motion-primitives";
+import { TiltCard } from "@/components/tilt-card";
+import { Marquee } from "@/components/marquee";
 import { projects, type Project } from "@/lib/site.config";
 import { Section } from "@/components/section";
 
@@ -33,7 +35,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
   return (
     <FadeIn as="article" delay={index * 0.12} className={spanClass}>
-      <div className="group relative flex h-full flex-col rounded-2xl border border-border bg-surface p-6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-border-strong hover:bg-surface-raised hover:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)] sm:p-8">
+      <TiltCard className="h-full">
+      <div className="group relative flex h-full flex-col rounded-2xl border border-border bg-surface p-6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-accent hover:bg-surface-raised hover:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)] sm:p-8">
         {project.featured ? (
           <span className="eyebrow mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[0.65rem]">
             Featured
@@ -86,6 +89,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </a>
         </div>
       </div>
+      </TiltCard>
     </FadeIn>
   );
 }
@@ -103,6 +107,11 @@ export function Projects() {
           <ProjectCard key={project.title} project={project} index={i} />
         ))}
       </div>
+
+      {/* infinite tech ticker under the grid */}
+      <FadeIn delay={0.2} className="mt-16">
+        <Marquee />
+      </FadeIn>
     </Section>
   );
 }

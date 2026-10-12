@@ -2,7 +2,7 @@ import { site } from "@/lib/site.config";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border px-6 py-10 sm:px-8">
+    <footer className="border-t border-border-strong px-6 py-10 sm:px-8">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <p className="font-mono text-xs text-muted">
           © 2026 {site.name}. Built with Next.js + Tailwind.

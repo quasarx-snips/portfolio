@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { Aurora } from "@/components/aurora";
+import { TiltCard } from "@/components/tilt-card";
 import { FadeIn } from "@/components/motion-primitives";
 import { MagneticButton } from "@/components/magnetic-button";
 import { site } from "@/lib/site.config";
@@ -48,6 +50,7 @@ export function Contact() {
     <section id="contact" className="relative isolate scroll-mt-24 overflow-hidden px-6 py-28 sm:px-8 sm:py-36">
       {/* echo of the hero blob, so the page closes where it opened */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <Aurora />
         <Image
           src="/blob.svg"
           alt=""
@@ -72,11 +75,12 @@ export function Contact() {
         <div className="mt-14 grid gap-4 sm:grid-cols-3">
           {channels.map(({ label, value, href, Icon }, i) => (
             <FadeIn key={label} delay={i * 0.08}>
+              <TiltCard className="h-full">
               <a
                 href={href}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="group flex h-full flex-col gap-4 rounded-2xl border border-border bg-surface p-6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-border-strong hover:bg-surface-raised hover:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)]"
+                className="group flex h-full flex-col gap-4 rounded-2xl border border-border bg-surface p-6 transition-[transform,box-shadow,background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-accent hover:bg-surface-raised hover:shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)]"
               >
                 <span className="text-primary transition-colors group-hover:text-secondary">
                   <Icon />
@@ -86,6 +90,7 @@ export function Contact() {
                   <span className="mt-0.5 block font-mono text-xs break-all text-muted">{value}</span>
                 </span>
               </a>
+              </TiltCard>
             </FadeIn>
           ))}
         </div>

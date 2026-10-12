@@ -40,5 +40,5 @@ export function Section({
 
 /** Hairline divider used between sections — matches the light-grey-divider intent. */
 export function Divider() {
-  return <div aria-hidden="true" className="mx-auto max-w-6xl px-6 sm:px-8"><div className="h-px w-full bg-border" /></div>;
+  return <div aria-hidden="true" className="mx-auto max-w-6xl px-6 sm:px-8"><div className="h-px w-full bg-border-strong" /></div>;
 }
