@@ -17,9 +17,9 @@ export function About() {
         <FadeIn delay={0.15}>
           <dl className="divide-y divide-border border-y border-border-strong">
             {[
-              { label: "Focus", value: "Machine learning + interfaces" },
-              { label: "Studying", value: "Math & Computer Science" },
-              { label: "Location", value: "Remote / hybrid" },
+              { label: "Focus", value: "Aerospace security + AI/ML" },
+              { label: "Studying", value: site.education.degree },
+              { label: "Location", value: site.location },
               { label: "Status", value: site.status.label },
             ].map((row) => (
               <div key={row.label} className="flex items-baseline justify-between gap-6 py-4">

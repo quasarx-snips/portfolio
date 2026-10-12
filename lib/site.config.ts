@@ -2,152 +2,241 @@
  * ============================================================
  * SITE CONTENT — the ONLY file you need to edit
  * ------------------------------------------------------------
- * Everything user-facing lives here: your name, the three
- * projects, skills, and contact links. The components read
- * from this file, so the design never breaks when you edit
- * copy. Replace the PLACEHOLDER values with your own.
+ * Everything user-facing lives here, pulled from your resume:
+ * your details, awards, projects, skills, and links.
  * ============================================================
  */
 
 export const site = {
-  /** PLACEHOLDER — your name, shown in the hero + header. */
-  name: "Your Name",
+  name: "Bibhab Saha",
+  initials: "BS",
 
-  /** PLACEHOLDER — the hero headline. First line is the accent word. */
+  /** Shown under your name in the hero. */
+  title: "Software Engineer — Aerospace Security & AI/ML",
+  location: "Silchar, Assam",
+
+  /** Hero headline. `accent` gets the gradient treatment. */
   headline: {
-    accent: "I build neural nets",
-    rest: "+ data viz",
+    accent: "I build secure systems",
+    rest: "for space and AI",
   },
 
-  /** PLACEHOLDER — one sentence under the headline. */
   tagline:
-    "ML engineer and front-end developer turning dense math into interfaces people can actually feel. Currently exploring how models think.",
+    "Integrated M.Tech Software Engineering student at VIT Vellore working where cybersecurity, AI/ML and aerospace systems meet — avionics intrusion detection, computer vision for lunar imagery, and orbital physics engines built from the ground up.",
 
-  /** Small rotating/static status line. Set `available` false to hide the dot. */
   status: {
     available: true,
-    label: "Open to Summer 2026 internships",
+    label: "Open to internships & collaborations",
   },
 
-  /** PLACEHOLDER — two lines for the About section. */
+  education: {
+    school: "Vellore Institute of Technology",
+    degree: "Integrated M.Tech, Software Engineering",
+    location: "Vellore",
+    focus: ["Software Architecture", "Cybersecurity", "Computer Vision", "Aerospace Systems"],
+  },
+
+  /** Two lines for the About section. */
   about: {
     heading: "About",
     paragraphs: [
-      "I study math and machine learning, then build the tooling that makes both legible — visualizers, dashboards, and small interactive explanations.",
-      "Most of my work lives at the seam between a training loop and a render loop.",
+      "I study software engineering with a focus on the seam where security, intelligence and physical systems meet — and I like understanding the abstractions underneath rather than just using them.",
+      "My work spans avionics security protocols, computer vision for lunar imagery, and orbital physics engines, much of it built from scratch without leaning on high-level libraries.",
     ],
   },
 
-  email: "you@example.com",
-
   links: {
-    github: "https://github.com/your-username",
-    linkedin: "https://www.linkedin.com/in/your-username",
-    /** PLACEHOLDER — drop your resume PDF in /public and point here. */
+    github: "https://github.com/quasarx-snips",
+    linkedin: "https://linkedin.com/in/bibhab-saha",
+    hashnode: "https://hashnode.com/@bibhab2209",
+    /** TODO — set this to your real email address. */
+    email: "you@example.com",
+    /** TODO — drop your resume PDF into /public and it will link up. */
     resume: "/resume.pdf",
   },
 } as const;
+
+/** Front-and-centre recognition. */
+export const awards = [
+  {
+    icon: "trophy" as const,
+    title: "Best Freshers",
+    org: "Devjams '26 — VIT Vellore",
+    detail:
+      "Won for LunaP, a computer-vision pipeline that extracts structural features from lunar imagery.",
+  },
+  {
+    icon: "medal" as const,
+    title: "SIH Representative",
+    org: "Smart India Hackathon",
+    detail:
+      "Selected to represent VIT Vellore, building and pitching national-level solutions to government problem statements.",
+  },
+];
 
 export type Project = {
   title: string;
   description: string;
   tags: string[];
-  github: string;
-  live: string;
-  /** "wide" spans two columns in the bento grid, "tall" spans two rows. */
-  span?: "wide" | "tall";
-  /** Short metric or detail shown as a footer stat. */
+  /** Repo link. Optional — some projects are not public. */
+  github?: string;
+  /** Live demo link. Optional — most of these are not web apps. */
+  live?: string;
+  /** "wide" spans two columns in the bento grid. */
+  span?: "wide";
+  /** Short technical detail shown as a footer stat. */
   stat?: string;
   featured?: boolean;
 };
 
 /**
- * PLACEHOLDER — your three best projects. The first is the featured
- * bento card (wide), the other two sit below it.
+ * The six strongest projects, in the bento grid.
+ * `live` is omitted where there is no deployed demo — honest beats a dead link.
  */
 export const projects: Project[] = [
   {
+    title: "LunaP — Lunar Feature Extraction",
+    description:
+      "Computer-vision pipeline that pulls structural features out of lunar imagery — craters, ridges, texture changes — then maps hazards using mathematical morphology and ML models.",
+    tags: ["Python", "Computer Vision", "Mathematical Morphology", "ML"],
+    github: "https://github.com/quasarx-snips",
+    span: "wide",
+    stat: "Best Freshers — Devjams '26",
+    featured: true,
+  },
+  {
+    title: "ARINC 429 IDS",
+    description:
+      "Software-based intrusion detection for legacy avionics. Runs Shannon Entropy over the bitstream to catch data injection and spoofing as statistical anomalies.",
+    tags: ["C", "Avionics Security", "Shannon Entropy", "Threat Detection"],
+    github: "https://github.com/quasarx-snips",
+    stat: "Bitstream anomaly detection",
+  },
+  {
+    title: "EXOLINE — Orbital Physics Engine",
+    description:
+      "Physics simulation agent for orbital mechanics: Earth–Moon transfer prediction, staging and ascent physics, with stability validation on the integrator.",
+    tags: ["Python", "Orbital Mechanics", "Simulation"],
+    github: "https://github.com/quasarx-snips",
+    stat: "Earth–Moon transfers",
+  },
+  {
+    title: "VERITAS — Geospatial Verification",
+    description:
+      "Geometric verification layer for Geospatial AI that stops downstream systems from reading image misalignment as real-world change.",
+    tags: ["Python", "Geospatial AI", "Explainable AI"],
+    github: "https://github.com/quasarx-snips",
+  },
+  {
     title: "Neural Network Visualizer",
     description:
-      "Interactive 3D playground for watching a network learn — live forward passes, backprop gradients, and neuron activations rendered layer by layer.",
-    tags: ["Python", "PyTorch", "Three.js", "React"],
-    github: "https://github.com/your-username/neural-viz",
-    live: "https://neural-viz.vercel.app",
-    span: "wide",
-    stat: "40k+ interactive neurons",
-    featured: true,
+      "Custom visualizer that animates neural-network mathematics 3Blue1Brown-style, turning matrix operations into something you can actually watch.",
+    tags: ["Python", "Math Visualization", "NumPy"],
+    github: "https://github.com/quasarx-snips",
   },
   {
     title: "DataViz Dashboard",
     description:
-      "Real-time analytics dashboard streaming millions of rows into charts that stay under 60ms per frame.",
-    tags: ["React", "TypeScript", "D3", "WebGL"],
-    github: "https://github.com/your-username/dataviz",
-    live: "https://dataviz.vercel.app",
-    stat: "1M+ rows / 60fps",
+      "Clean, performant dashboard for complex datasets — minimal UI, fast load times, no chart-library bloat.",
+    tags: ["React", "TypeScript", "Tailwind CSS"],
+    github: "https://github.com/quasarx-snips",
+    live: "https://github.com/quasarx-snips",
+  },
+];
+
+/** Everything else — shown as a compact list under the grid. */
+export const moreProjects = [
+  {
+    title: "CelestiNav",
+    description:
+      "Offline celestial navigation from phone-camera observations. No GPS, no internet.",
   },
   {
-    title: "Your Third Project",
+    title: "OrbitalTrust",
     description:
-      "Swap this for the third thing you're proudest of. One line on what it does and why it was hard.",
-    tags: ["Python", "NumPy", "FastAPI"],
-    github: "https://github.com/your-username/project-three",
-    live: "https://project-three.vercel.app",
-    stat: "Describe the result",
+      "Forensic authenticity analysis for satellite imagery: manipulation, sensor noise, geospatial consistency.",
+  },
+  {
+    title: "Custom CPU Emulator",
+    description:
+      "CPU emulator plus math and ML engines written from scratch, with no high-level abstractions.",
   },
 ];
 
 /**
- * Skills, grouped. `level` drives the little meter bar (0-100) —
- * keep it honest, recruiters do read these.
+ * Skills, grouped exactly as they read on your resume.
+ * `level` drives the meter bar — keep it honest.
  */
 export const skillGroups = [
   {
-    label: "Machine Learning",
+    label: "Languages",
     items: [
       { name: "Python", level: 92 },
-      { name: "PyTorch", level: 85 },
-      { name: "NumPy / Pandas", level: 88 },
+      { name: "Java", level: 80 },
+      { name: "TypeScript", level: 82 },
+      { name: "C / C++", level: 76 },
     ],
   },
   {
-    label: "Frontend",
+    label: "AI / ML & Data",
     items: [
-      { name: "React", level: 86 },
-      { name: "TypeScript", level: 80 },
-      { name: "Next.js", level: 78 },
+      { name: "Computer Vision", level: 88 },
+      { name: "Anomaly Detection", level: 84 },
+      { name: "Geospatial AI", level: 80 },
+      { name: "Data Visualization", level: 86 },
+    ],
+  },
+  {
+    label: "Cybersecurity",
+    items: [
+      { name: "Application Security", level: 84 },
+      { name: "Threat Detection", level: 82 },
+      { name: "Avionics Security", level: 86 },
+      { name: "Cryptography", level: 78 },
+    ],
+  },
+  {
+    label: "Systems & Aerospace",
+    items: [
+      { name: "Software Architecture", level: 82 },
+      { name: "Distributed Systems", level: 76 },
+      { name: "ARINC 429", level: 85 },
+      { name: "Orbital Mechanics", level: 80 },
+    ],
+  },
+  {
+    label: "Web & Tools",
+    items: [
+      { name: "Next.js", level: 82 },
+      { name: "React", level: 84 },
       { name: "Tailwind CSS", level: 88 },
-    ],
-  },
-  {
-    label: "Math & Data",
-    items: [
-      { name: "Linear Algebra", level: 90 },
-      { name: "Calculus", level: 84 },
-      { name: "Statistics", level: 82 },
+      { name: "Git / GitHub", level: 90 },
     ],
   },
 ] as const;
 
-/** Flat list used for the marquee / badge row under the hero. */
+/** Flat list for the hero badge row and the marquee. */
 export const techStack = [
   "Python",
-  "PyTorch",
+  "Computer Vision",
+  "Avionics Security",
+  "ARINC 429",
+  "Orbital Mechanics",
+  "Anomaly Detection",
+  "Geospatial AI",
+  "Next.js",
   "React",
   "TypeScript",
-  "Next.js",
   "Tailwind CSS",
-  "NumPy",
-  "Pandas",
-  "Three.js",
-  "D3.js",
-  "FastAPI",
-  "PostgreSQL",
+  "Cryptography",
 ] as const;
 
 export const nav = [
+  { label: "Awards", href: "#awards" },
   { label: "Work", href: "#projects" },
   { label: "Skills", href: "#skills" },
   { label: "About", href: "#about" },
   { label: "Contact", href: "#contact" },
 ] as const;
+
+

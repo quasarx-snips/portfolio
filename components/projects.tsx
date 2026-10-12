@@ -1,7 +1,7 @@
 import { FadeIn } from "@/components/motion-primitives";
 import { TiltCard } from "@/components/tilt-card";
 import { Marquee } from "@/components/marquee";
-import { projects, type Project } from "@/lib/site.config";
+import { projects, moreProjects, type Project } from "@/lib/site.config";
 import { Section } from "@/components/section";
 
 /** Small inline icon set — keeps the build dependency-free. */
@@ -69,24 +69,28 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </ul>
 
         <div className="mt-6 flex items-center gap-5 border-t border-border pt-5">
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
-          >
-            <GithubIcon />
-            Code
-          </a>
-          <a
-            href={project.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
-          >
-            <ExternalIcon />
-            Live
-          </a>
+          {project.github ? (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
+            >
+              <GithubIcon />
+              Code
+            </a>
+          ) : null}
+          {project.live ? (
+            <a
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
+            >
+              <ExternalIcon />
+              Live
+            </a>
+          ) : null}
         </div>
       </div>
       </TiltCard>
@@ -107,6 +111,21 @@ export function Projects() {
           <ProjectCard key={project.title} project={project} index={i} />
         ))}
       </div>
+
+      {/* the rest of the portfolio, as a compact list */}
+      <FadeIn delay={0.15} className="mt-16">
+        <h3 className="eyebrow mb-6">Also built</h3>
+        <ul className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+          {moreProjects.map((item) => (
+            <li key={item.title} className="bg-surface p-6">
+              <h4 className="text-sm font-semibold text-text">{item.title}</h4>
+              <p className="mt-2 text-sm leading-relaxed text-muted text-pretty">
+                {item.description}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </FadeIn>
 
       {/* infinite tech ticker under the grid */}
       <FadeIn delay={0.2} className="mt-16">

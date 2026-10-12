@@ -47,7 +47,7 @@ export function SiteHeader() {
         </nav>
 
         <a
-          href={`mailto:${site.email}`}
+          href={`mailto:${site.links.email}`}
           className="rounded-full border border-border-strong px-4 py-1.5 text-sm text-text transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
         >
           Get in touch

@@ -77,6 +77,12 @@ export function Hero() {
           <p className="text-lg leading-relaxed text-muted text-pretty">{site.tagline}</p>
         </FadeIn>
 
+        <FadeIn delay={0.55} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="font-mono text-sm text-secondary">{site.title}</span>
+          <span aria-hidden="true" className="h-1 w-1 rounded-full bg-border-strong" />
+          <span className="font-mono text-sm text-muted">{site.location}</span>
+        </FadeIn>
+
         <FadeIn delay={0.6} className="mt-10 flex flex-wrap items-center gap-4">
           <MagneticButton
             href="#projects"
@@ -98,7 +104,7 @@ export function Hero() {
           </MagneticButton>
 
           <MagneticButton
-            href={`mailto:${site.email}`}
+            href={`mailto:${site.links.email}`}
             className="inline-flex h-12 items-center justify-center rounded-full border border-border-strong px-7 text-sm font-medium text-text transition-colors duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary"
           >
             Contact me

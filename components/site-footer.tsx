@@ -25,7 +25,15 @@ export function SiteFooter() {
             LinkedIn
           </a>
           <a
-            href={`mailto:${site.email}`}
+            href={site.links.hashnode}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted transition-colors hover:text-primary"
+          >
+            Hashnode
+          </a>
+          <a
+            href={`mailto:${site.links.email}`}
             className="text-xs text-muted transition-colors hover:text-primary"
           >
             Email

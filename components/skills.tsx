@@ -59,7 +59,7 @@ export function Skills() {
       id="skills"
       eyebrow="Toolkit"
       title="What I work with"
-      description="The tools reach for most often. Levels are self-assessed and honestly labelled."
+      description="The stack behind the projects above — from low-level C to orbital mechanics to the web."
     >
       <div className="grid grid-cols-1 gap-x-12 gap-y-14 md:grid-cols-3">
         {skillGroups.map((group, i) => (

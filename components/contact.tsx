@@ -39,10 +39,36 @@ function MailIcon() {
   );
 }
 
+function HashnodeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
+      <path d="M12 2.2a9.8 9.8 0 1 0 0 19.6 9.8 9.8 0 0 0 0-19.6Zm0 1.5a8.3 8.3 0 0 1 4.6 15.2V8.9a1.4 1.4 0 0 0-1.4-1.4h-6.4A1.4 1.4 0 0 0 7.4 8.9v10a8.3 8.3 0 0 1 4.6-15.2ZM8.9 9.6h6.2v9.3a8.3 8.3 0 0 1-6.2-9.3Z" />
+    </svg>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+      <path d="M14 3v5h5M9 13h6M9 17h4" />
+    </svg>
+  );
+}
+
 const channels = [
-  { label: "GitHub", value: "github.com/your-username", href: site.links.github, Icon: GithubIcon },
-  { label: "LinkedIn", value: "in/your-username", href: site.links.linkedin, Icon: LinkedinIcon },
-  { label: "Email", value: site.email, href: `mailto:${site.email}`, Icon: MailIcon },
+  { label: "GitHub", value: "@quasarx-snips", href: site.links.github, Icon: GithubIcon },
+  { label: "LinkedIn", value: "in/bibhab-saha", href: site.links.linkedin, Icon: LinkedinIcon },
+  { label: "Hashnode", value: "@bibhab2209", href: site.links.hashnode, Icon: HashnodeIcon },
 ];
 
 export function Contact() {
@@ -95,12 +121,21 @@ export function Contact() {
           ))}
         </div>
 
-        <FadeIn delay={0.3} className="mt-12">
+        <FadeIn delay={0.3} className="mt-12 flex flex-wrap items-center gap-4">
           <MagneticButton
-            href={`mailto:${site.email}`}
+            href={`mailto:${site.links.email}`}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-7 text-sm font-medium text-background transition-colors duration-200 hover:bg-secondary"
           >
+            <MailIcon />
             Send me an email
+          </MagneticButton>
+
+          <MagneticButton
+            href={site.links.resume}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border-strong px-7 text-sm font-medium text-text transition-colors duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary"
+          >
+            <FileIcon />
+            Download résumé
           </MagneticButton>
         </FadeIn>
       </div>
