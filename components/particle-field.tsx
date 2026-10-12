@@ -19,8 +19,10 @@ import { pointer, trackPointer } from "@/lib/pointer";
  *   - skipped entirely on mobile / coarse pointers
  *   - skipped entirely under prefers-reduced-motion
  *   - frozen by IntersectionObserver when scrolled out of view or tab hidden
- *   - devicePixelRatio capped at 2
+ *   - devicePixelRatio capped at 1.5 (a decorative field — no visible loss)
  *   - squared-distance early exits in the link loop
+ *   - ALL links batched into two path draws per frame instead of one
+ *     stroke() per particle pair (was ~7000 draw calls, now 2)
  */
 
 type Particle = {
@@ -34,13 +36,13 @@ type Particle = {
 };
 
 const COLORS = {
-  primary: [237, 120, 120] as const,
-  secondary: [246, 208, 208] as const,
-  accent: [229, 143, 143] as const,
+  primary: [217, 125, 118] as const,
+  secondary: [243, 209, 204] as const,
+  accent: [235, 163, 156] as const,
 };
 
-const MAX_PARTICLES = 120;
-const LINK_DIST = 128;
+const MAX_PARTICLES = 84;
+const LINK_DIST = 112;
 const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
 const CURSOR_DIST = 165;
 const CURSOR_DIST_SQ = CURSOR_DIST * CURSOR_DIST;
@@ -72,7 +74,7 @@ export function ParticleField({ className }: { className?: string }) {
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       width = rect.width;
       height = rect.height;
       canvas.width = Math.max(Math.floor(width * dpr), 1);
@@ -166,8 +168,13 @@ export function ParticleField({ className }: { className?: string }) {
         ctx.fill();
       }
 
-      // --- links between nearby particles, plus links to the cursor ---
+      // --- links between nearby particles ---
+      // ONE path + ONE stroke for every pair: per-pair strokes were ~7000
+      // draw calls per frame and the main source of pointer jank.
       ctx.lineWidth = 0.7;
+      const accent = COLORS.accent;
+      ctx.strokeStyle = `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, 0.2)`;
+      ctx.beginPath();
       for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
 
@@ -177,32 +184,29 @@ export function ParticleField({ className }: { className?: string }) {
           if (dx > LINK_DIST || dx < -LINK_DIST) continue;
           const dy = a.y - b.y;
           if (dy > LINK_DIST || dy < -LINK_DIST) continue;
-          const distSq = dx * dx + dy * dy;
-          if (distSq > LINK_DIST_SQ) continue;
+          if (dx * dx + dy * dy > LINK_DIST_SQ) continue;
 
-          const alpha = (1 - Math.sqrt(distSq) / LINK_DIST) * 0.34;
-          const accent = COLORS.accent;
-          ctx.strokeStyle = `rgba(${accent[0]}, ${accent[1]}, ${accent[2]}, ${alpha})`;
-          ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.stroke();
         }
+      }
+      ctx.stroke();
 
-        if (cursorActive) {
+      // --- links from nearby particles to the cursor: one path, one stroke ---
+      if (cursorActive) {
+        const primary = COLORS.primary;
+        ctx.strokeStyle = `rgba(${primary[0]}, ${primary[1]}, ${primary[2]}, 0.35)`;
+        ctx.beginPath();
+        for (let i = 0; i < particles.length; i++) {
+          const a = particles[i];
           const dx = a.x - pointer.x;
           const dy = a.y - pointer.y;
-          const distSq = dx * dx + dy * dy;
-          if (distSq < CURSOR_DIST_SQ) {
-            const alpha = (1 - Math.sqrt(distSq) / CURSOR_DIST) * 0.4;
-            const primary = COLORS.primary;
-            ctx.strokeStyle = `rgba(${primary[0]}, ${primary[1]}, ${primary[2]}, ${alpha})`;
-            ctx.beginPath();
+          if (dx * dx + dy * dy < CURSOR_DIST_SQ) {
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(pointer.x, pointer.y);
-            ctx.stroke();
           }
         }
+        ctx.stroke();
       }
 
       ctx.globalCompositeOperation = "source-over";

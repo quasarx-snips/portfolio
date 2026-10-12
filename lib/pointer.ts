@@ -77,17 +77,31 @@ export function trackPointer(): void {
   document.addEventListener("pointerleave", onLeave);
 }
 
+/*
+ * MediaQueryLists are cached: building one per call (these helpers run
+ * inside pointermove handlers) allocates needlessly. `.matches` is still
+ * read live, so OS-level setting changes are picked up immediately.
+ */
+let finePointerQuery: MediaQueryList | null = null;
+let reducedMotionQuery: MediaQueryList | null = null;
+
 /**
  * True when the device has a precise pointer (mouse/trackpad). Touch
  * devices get none of the hover-only flourishes.
  */
 export function hasFinePointer(): boolean {
   if (typeof window === "undefined") return false;
-  return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (!finePointerQuery) {
+    finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+  }
+  return finePointerQuery.matches;
 }
 
 /** True when the user asked the OS to reduce motion. */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reducedMotionQuery) {
+    reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  }
+  return reducedMotionQuery.matches;
 }

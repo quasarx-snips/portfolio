@@ -4,9 +4,9 @@ import { useEffect, useRef } from "react";
 import { hasFinePointer, prefersReducedMotion, trackPointer } from "@/lib/pointer";
 
 /**
- * CustomCursor — a small dot locked to the pointer plus a larger ring that
- * trails behind it. The two move at different rates (dot 0.45, ring 0.14)
- * which is what creates the "elastic follow" feel.
+ * CustomCursor — a small dot locked 1:1 to the pointer plus a larger ring
+ * that trails behind it (0.16 lerp), which is what creates the "elastic
+ * follow" feel without ever making the actual pointer feel laggy.
  *
  * Behaviour:
  *   - the ring inflates and fills when over anything interactive, found via
@@ -15,8 +15,9 @@ import { hasFinePointer, prefersReducedMotion, trackPointer } from "@/lib/pointe
  *   - mounts ONLY on fine-pointer devices with motion allowed, so touch
  *     users keep their native cursor and reduced-motion users see nothing
  *
- * Cost: one rAF loop that writes transforms directly to two DOM nodes.
- * Zero React state, so pointer movement never re-renders the tree.
+ * Cost: one rAF loop that writes transforms directly to two DOM nodes,
+ * and only while something is actually moving. Zero React state, so
+ * pointer movement never re-renders the tree.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
@@ -40,10 +41,12 @@ export function CustomCursor() {
     let ringY = mouseY;
     let hovering = false;
     let raf = 0;
+    let dotDirty = false;
 
     const onMove = (event: PointerEvent) => {
       mouseX = event.clientX;
       mouseY = event.clientY;
+      dotDirty = true;
 
       // one delegated hit-test for the whole document
       const target = event.target as Element | null;
@@ -75,15 +78,27 @@ export function CustomCursor() {
       ring.style.opacity = "1";
     };
 
-    const loop = () => {
-      // dot tracks almost exactly; ring lags, producing the trail
-      dotX += (mouseX - dotX) * 0.45;
-      dotY += (mouseY - dotY) * 0.45;
-      ringX += (mouseX - ringX) * 0.14;
-      ringY += (mouseY - ringY) * 0.14;
+    // paint the starting position once so neither element flashes at (0, 0)
+    dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
+    ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
 
-      dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+    const loop = () => {
+      // the dot is locked 1:1 to the pointer — easing it reads as input lag
+      if (dotDirty) {
+        dotDirty = false;
+        dotX = mouseX;
+        dotY = mouseY;
+        dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
+      }
+
+      // the ring lags behind for the trail; skip the write once it settles
+      const dx = mouseX - ringX;
+      const dy = mouseY - ringY;
+      if (Math.abs(dx) + Math.abs(dy) > 0.05) {
+        ringX += dx * 0.16;
+        ringY += dy * 0.16;
+        ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+      }
 
       raf = requestAnimationFrame(loop);
     };

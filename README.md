@@ -34,11 +34,11 @@ exposed to Tailwind via `@theme inline`.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--text` | `#FCFCF9` | body + headings |
-| `--background` | `#381919` | page canvas |
-| `--primary` | `#ed7878` | CTAs, links, focus ring |
-| `--secondary` | `#f6d0d0` | soft highlights |
-| `--accent` | `#e58f8f` | dividers, hover states |
+| `--text` | `#FFFFFF` | body + headings |
+| `--background` | `#2b1517` | page canvas |
+| `--primary` | `#d97d76` | CTAs, links, focus ring |
+| `--secondary` | `#f3d1cc` | soft highlights |
+| `--accent` | `#eba39c` | dividers, hover states |
 
 Derived tokens (`--surface`, `--border`, `--muted`, ...) build the elevation
 ramp. `--border-strong` sits at 3.02:1 against the background, which meets the

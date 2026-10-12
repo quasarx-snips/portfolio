@@ -4,27 +4,30 @@
   ============================================================
   DESIGN TOKENS  —  locked palette (do not drift)
   ------------------------------------------------------------
-  text        #FCFCF9  warm off-white   body + headings
-  background  #381919  deep burgundy    page canvas
-  primary     #ed7878  coral            CTAs, links, focus
-  secondary   #f6d0d0  pale pink        soft highlights
-  accent      #e58f8f  dusty rose       dividers, hover states
+  text        #FFFFFF  pure white       body + headings
+  background  #2b1517  dark maroon      page canvas
+  primary     #d97d76  coral            CTAs, links, focus
+  secondary   #f3d1cc  pale pink        soft highlights
+  accent      #eba39c  salmon pink      dividers, hover states
+  ------------------------------------------------------------
+  Contrast against --background: text 17.2:1 · primary 5.8:1 ·
+  accent 8.5:1 · border-strong 3.8:1 · border 2.9:1
   ============================================================
 */
 :root {
   /* core palette */
-  --text: #fcfcf9;
-  --background: #381919;
-  --primary: #ed7878;
-  --secondary: #f6d0d0;
-  --accent: #e58f8f;
+  --text: #ffffff;
+  --background: #2b1517;
+  --primary: #d97d76;
+  --secondary: #f3d1cc;
+  --accent: #eba39c;
 
   /* derived surfaces — one consistent elevation ramp */
-  --surface: #442020; /* card / panel fill, one step up from bg */
-  --surface-raised: #4f2626; /* hovered card fill */
-  --border: #7a4040; /* hairline divider — visible against the burgundy canvas */
-  --border-strong: #9e5858; /* emphasised divider / card frame */
-  --muted: #c9a9a9; /* secondary body copy on burgundy */
+  --surface: #351b1e; /* card / panel fill, one step up from bg */
+  --surface-raised: #422326; /* hovered card fill */
+  --border: #93504f; /* hairline divider — ~2.9:1, clearly visible */
+  --border-strong: #ab6264; /* emphasised divider / card frame — ~3.8:1 */
+  --muted: #c9a9a9; /* secondary body copy — ~8:1 on bg */
   --muted-strong: #e5c9c9; /* labels, meta text */
 }
 
