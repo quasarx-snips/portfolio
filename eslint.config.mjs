@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The cinematic is a separate Vite workspace with its own toolchain.
+    "apps/**",
   ]),
 ]);
 

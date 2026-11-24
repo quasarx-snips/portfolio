@@ -2,6 +2,26 @@
 
 Personal portfolio. Next.js 16, React 19, Tailwind CSS v4, Motion.
 
+## Repository layout
+
+This is an npm-workspaces monorepo with two independent apps:
+
+- **root** — the Next.js portfolio (this README, `app/`, `components/`, `lib/`).
+  Deploys to Vercel from `main`; `vercel.json` adds security headers.
+- **`apps/cinematic`** — "The Palace of Many Worlds", the scroll-driven opening
+  cinematic (Vite + React + GSAP). Runs on its own toolchain and never shares
+  build output with the portfolio.
+
+```bash
+npm install            # installs both workspaces (hoisted to root node_modules)
+npm run dev            # portfolio      → http://localhost:3000
+npm run cinematic:dev  # cinematic      → http://localhost:5188
+npm run cinematic:build / cinematic:preview / cinematic:typecheck
+```
+
+QA harnesses live in `qa/` (baseline timing + the screenshot harness). They are
+development-only and never ship.
+
 ## Getting started
 
 ```bash
