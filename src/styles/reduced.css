@@ -1,0 +1,280 @@
+/* ==========================================================================
+   The Palace of Many Worlds — reduced-motion journey
+   A static four-act composition for `prefers-reduced-motion: reduce`.
+
+   Every layout class here is `rm-` prefixed and self-contained. The only
+   external hooks are the documented static variants rendered by the reused
+   scenes (`.identity.is-static`, `.narrative.is-static`, plus the lang
+   attributes and documented custom properties `--slot` / `--scale` on the
+   name paragraphs), and the tokens from tokens.css.
+
+   Layer order inside each act (bottom to top):
+   background → environment → atmosphere → content
+   Act III instead stacks: back smoke → ghost trio → front smoke → atmosphere,
+   inside its own stacking context with explicit z-index values below.
+   ========================================================================== */
+
+.rm-experience {
+  position: relative;
+  background: var(--ink-900);
+}
+
+/* ---------------------------------------------------------------- the acts */
+
+.rm-act {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100lvh;
+  overflow-x: clip;
+}
+
+.rm-act--beginning {
+  /* frame.env.light at the chosen still (p = 0.2), read by the env sublayers. */
+  --light: 0.58;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(84px, 16vh, 176px) clamp(20px, 4vw, 48px) 0;
+  background: radial-gradient(
+    120% 92% at 50% 62%,
+    var(--ink-800) 0%,
+    var(--ink-900) 58%,
+    var(--ink-950) 100%
+  );
+}
+
+.rm-act--identity {
+  background:
+    radial-gradient(
+      92% 74% at 50% 46%,
+      rgba(169, 135, 87, 0.15) 0%,
+      rgba(111, 100, 89, 0.06) 44%,
+      rgba(7, 6, 10, 0) 76%
+    ),
+    var(--ink-900);
+}
+
+.rm-act--dissolution {
+  background: radial-gradient(
+    120% 96% at 50% 54%,
+    var(--ink-800) 0%,
+    var(--ink-900) 55%,
+    var(--ink-950) 100%
+  );
+}
+
+.rm-act--white {
+  background: var(--sand-100);
+}
+
+.rm-white-surface {
+  position: absolute;
+  inset: 0;
+  background: var(--sand-100);
+}
+
+/* ----------------------------------------------------------- the layers */
+
+.rm-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.rm-env {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.rm-env .world {
+  position: absolute;
+  inset: 0;
+}
+
+.rm-band {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.8;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 7, 0) 18%,
+    rgba(5, 5, 7, 0.44) 30%,
+    rgba(5, 5, 7, 0.64) 40%,
+    rgba(5, 5, 7, 0.66) 64%,
+    rgba(5, 5, 7, 0.5) 74%,
+    rgba(5, 5, 7, 0) 86%
+  );
+}
+
+.rm-env > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.rm-atmos {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Every atmosphere layer (dust canvas, grain, vignette) is full-bleed. */
+.rm-atmos > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* In Act III the finishing grain and vignette sit above the smoke. */
+.rm-atmos--above {
+  z-index: 5;
+}
+
+.rm-verse {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+}
+
+.rm-trio {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* A faint ghost of the name trio: the name being absorbed. */
+.rm-ghost {
+  opacity: 0.26;
+}
+
+.rm-dissolve {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  /* Its own stacking context: smoke planes cannot leak into the act. */
+  isolation: isolate;
+}
+
+.rm-smoke-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rm-smoke-back {
+  z-index: 2;
+}
+
+.rm-smoke-front {
+  z-index: 4;
+}
+
+.rm-smoke-layer > canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------- the name trio */
+
+/*
+ * The names are real text paragraphs carrying lang attributes (see
+ * src/content/opening.ts). Sizing them here with clamp() keeps the English
+ * name largest and the two Indic scripts slightly smaller at every target
+ * viewport, with `--scale: 1` so the sizes above are the visual sizes. The
+ * line box leaves headroom for the Devanagari and Bengali matras, so nothing
+ * is clipped.
+ */
+.rm-experience .rm-trio p[lang='en'] {
+  --scale: 1;
+  font-size: clamp(2.4rem, min(11.5vw, 15vh), 5.2rem);
+}
+
+.rm-experience .rm-trio p[lang='hi'] {
+  --scale: 1;
+  font-size: clamp(1.85rem, min(8.8vw, 11.5vh), 3.95rem);
+}
+
+.rm-experience .rm-trio p[lang='bn'] {
+  --scale: 1;
+  font-size: clamp(1.8rem, min(8.6vw, 11.2vh), 3.85rem);
+}
+
+/* Short wide viewports (e.g. 844×390): keep the trio clear of the subtitle. */
+@media (max-height: 700px) and (min-width: 761px) {
+  .rm-experience .rm-trio p[lang='en'] {
+    font-size: clamp(2.1rem, min(11vw, 12vh), 4.4rem);
+  }
+
+  .rm-experience .rm-trio p[lang='hi'] {
+    font-size: clamp(1.35rem, min(8.8vw, 7.2vh), 2.7rem);
+  }
+
+  .rm-experience .rm-trio p[lang='bn'] {
+    font-size: clamp(1.325rem, min(8.6vw, 7vh), 2.65rem);
+  }
+}
+
+/*
+ * The poem, the names and the subtitle stay real selectable text: the scenes
+ * disable pointer events on their decorative wrappers, so the text nodes
+ * themselves take pointer events back.
+ */
+.rm-experience .rm-verse p,
+.rm-experience .rm-trio p {
+  pointer-events: auto;
+}
+
+/* ------------------------------------------------------- the one fade-in */
+
+.rm-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 1200ms var(--ease-out),
+    transform 1200ms var(--ease-out);
+}
+
+.rm-reveal.rm-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+ * tokens.css collapses every transition under prefers-reduced-motion; this
+ * single gentle one-shot fade is the reduced experience's own arrival and is
+ * re-instated at higher specificity (not on the universal selector).
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rm-reveal {
+    transition:
+      opacity 1200ms var(--ease-out) !important,
+      transform 1200ms var(--ease-out) !important;
+  }
+}
+
+/* A soft hand-off from the smoke into the held white. */
+.rm-act--dissolution::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22vh;
+  z-index: 6;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(248, 246, 240, 0), var(--sand-100));
+}
