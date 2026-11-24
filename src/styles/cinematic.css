@@ -1,0 +1,909 @@
+/* ==========================================================================
+   The Palace of Many Worlds — opening cinematic
+   Frame order (bottom to top):
+   primordial glow → environment → dust → smoke-back → narrative → identity
+   → smoke-front → vignette → grain → whiteout
+   ========================================================================== */
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+#root {
+  isolation: isolate;
+}
+
+.skip-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 100;
+  padding: 10px 16px;
+  border: 1px solid rgba(201, 160, 106, 0.35);
+  border-radius: 2px;
+  background: var(--ink-900);
+  color: var(--sand-200);
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transform: translateY(-180%);
+  transition: transform 220ms var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 1px solid var(--gold-400);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- the stage */
+
+.cinematic {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+  background: var(--ink-900);
+}
+
+.cinema-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  background:
+    radial-gradient(120% 90% at 50% 62%, #0d0a0c 0%, #07060a 58%, #050409 100%);
+  --light: 0.35;
+  --stack-gap: clamp(92px, 13vh, 128px);
+  isolation: isolate;
+}
+
+.primordial {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    46% 34% at 50% 54%,
+    rgba(150, 112, 72, 0.22) 0%,
+    rgba(92, 68, 48, 0.1) 42%,
+    rgba(20, 16, 20, 0) 74%
+  );
+}
+
+.env-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.env-svg .rim {
+  stroke-opacity: 0.95;
+  opacity: calc(var(--light) * 0.34);
+}
+
+.env-svg .sky-glow {
+  opacity: calc(var(--light) * 0.95);
+}
+
+.env-svg .sky-stars {
+  opacity: calc(1 - var(--light) * 0.55);
+}
+
+.env-svg .sky-clouds {
+  opacity: 0.9;
+}
+
+.env-svg .sky-shafts {
+  opacity: calc(var(--light) * 0.34);
+}
+
+.env-svg .palace-far {
+  opacity: 0.26;
+}
+
+.env-svg .palace-far .rim {
+  opacity: 0.16;
+}
+
+.env-svg .distant-lights {
+  opacity: calc(var(--light) * 0.34);
+}
+
+.env-svg .lantern {
+  opacity: calc(var(--light) * 0.75);
+}
+
+.dust-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.smoke {
+  position: absolute;
+  inset: -7%;
+  width: 114%;
+  height: 114%;
+  pointer-events: none;
+}
+
+.smoke-back {
+  z-index: 3;
+}
+
+.smoke-front {
+  z-index: 6;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 92% 82% at 50% 46%, rgba(5, 4, 9, 0) 42%, rgba(5, 4, 9, 0.72) 100%);
+}
+
+.grain {
+  position: absolute;
+  inset: -8%;
+  z-index: 8;
+  pointer-events: none;
+  opacity: 0;
+  background-repeat: repeat;
+  background-size: 170px 170px;
+  mix-blend-mode: overlay;
+}
+
+.whiteout {
+  position: absolute;
+  inset: -12%;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0;
+  background: var(--sand-100);
+}
+
+
+/* ------------------------------------------------------------------- world */
+
+.world {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: #04060a;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.world__layers {
+  position: absolute;
+  inset: -2.5%;
+  z-index: 0;
+  transform-origin: 50% 47%;
+  will-change: transform;
+}
+
+.world__picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* Hidden until both plates are decoded; the prologue covers this anyway, but
+   a hash deep-link should never flash a half-painted plate. */
+.world {
+  visibility: hidden;
+}
+
+.world.is-ready {
+  visibility: visible;
+}
+
+.world__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 52%;
+  user-select: none;
+  pointer-events: none;
+}
+
+.world__clear {
+  --clear: 0;
+  opacity: 0;
+  /* No CSS filter here: a full-screen filter forces an offscreen pass every
+     time the mask animates, which is one of the most expensive things an old
+     GPU can be asked to do. The plate is already graded. */
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 55%,
+    #000 0%,
+    #000 calc(var(--clear) * 55%),
+    transparent calc(var(--clear) * 102% + 16%)
+  );
+  mask-image: radial-gradient(
+    circle at 50% 55%,
+    #000 0%,
+    #000 calc(var(--clear) * 55%),
+    transparent calc(var(--clear) * 102% + 16%)
+  );
+}
+
+.world__warm {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  mix-blend-mode: soft-light;
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 58%,
+    rgba(255, 199, 128, 0.52) 0%,
+    rgba(224, 154, 78, 0.2) 38%,
+    rgba(122, 58, 18, 0) 72%
+  );
+}
+
+.world__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 46%, rgba(3, 4, 6, 0) 32%, rgba(3, 4, 6, 0.46) 100%),
+    linear-gradient(
+      180deg,
+      rgba(4, 5, 7, 0.26) 0%,
+      rgba(4, 5, 7, 0) 22%,
+      rgba(4, 5, 7, 0) 68%,
+      rgba(4, 5, 7, 0.42) 100%
+    );
+}
+
+.world-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.3;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 5, 7, 0) 20%,
+    rgba(5, 5, 7, 0.42) 30%,
+    rgba(5, 5, 7, 0.62) 40%,
+    rgba(5, 5, 7, 0.66) 62%,
+    rgba(5, 5, 7, 0.5) 72%,
+    rgba(5, 5, 7, 0) 84%
+  );
+}
+
+/* ------------------------------------------------------------- the narration */
+
+.narrative {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 24px 9vh;
+  pointer-events: none;
+}
+
+.narrative-lines {
+  position: relative;
+  width: min(1080px, 92vw);
+  text-align: center;
+}
+
+.narration-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  margin: 0;
+  color: #fbf9f3;
+  font-family: var(--hand);
+  font-size: clamp(1.9rem, 3.2vw + 1.1rem, 4rem);
+  font-weight: 400;
+  font-variation-settings: normal;
+  line-height: 1.18;
+  letter-spacing: 0.008em;
+  text-wrap: balance;
+  text-shadow:
+    0 1px 2px rgba(2, 5, 8, 0.35),
+    0 4px 34px rgba(2, 5, 8, 0.5),
+    0 0 110px rgba(4, 9, 12, 0.55);
+  opacity: 0;
+  will-change: opacity, filter, transform;
+  transform: translate3d(0, calc(-50% + 20px), 0);
+}
+
+.narrative.is-static {
+  position: relative;
+  inset: auto;
+  padding: 0;
+  display: block;
+}
+
+.narrative.is-static .narrative-lines {
+  margin: 0 auto;
+}
+
+.narrative.is-static .narration-line {
+  position: static;
+  margin: 0 0 0.18em;
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.narrative.is-static .narration-line:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------- the name */
+
+.identity {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  --stack-gap: clamp(92px, 13vh, 128px);
+}
+
+.identity-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(96vw, 1040px);
+  height: min(74vh, 760px);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    rgba(241, 203, 146, 0.2) 0%,
+    rgba(205, 161, 104, 0.085) 44%,
+    rgba(205, 161, 104, 0) 76%
+  );
+}
+
+.identity-sweep {
+  position: absolute;
+  left: 50%;
+  top: -18%;
+  width: 46vw;
+  height: 136%;
+  margin-left: -23vw;
+  opacity: 0;
+  transform: translateX(-130%) rotate(-8deg);
+  background: linear-gradient(
+    90deg,
+    rgba(247, 224, 187, 0) 0%,
+    rgba(247, 224, 187, 0.055) 38%,
+    rgba(255, 240, 214, 0.13) 50%,
+    rgba(247, 224, 187, 0.055) 62%,
+    rgba(247, 224, 187, 0) 100%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.identity-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.names {
+  position: absolute;
+  inset: 0;
+}
+
+.name {
+  position: absolute;
+  left: 50%;
+  top: 46.5%;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1;
+  color: var(--name-ink, var(--sand-200));
+  font-weight: 300;
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%) translateY(calc(var(--slot, 0) * var(--stack-gap)))
+    scale(var(--scale, 1)) translateY(var(--name-nudge, 0em));
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+
+.name-en {
+  --name-nudge: 0em;
+  font-family: var(--cormorant);
+  font-size: min(13.4vw, 17vh);
+  line-height: 1;
+  letter-spacing: 0.006em;
+  font-weight: 500;
+  font-variation-settings: normal;
+  text-indent: 0.008em;
+  text-shadow:
+    0 0 90px var(--name-glow, rgba(236, 197, 139, 0.16)),
+    0 10px 60px var(--name-shadow, rgba(0, 0, 0, 0.45));
+}
+
+.name-hi {
+  --name-nudge: 0.33em;
+  font-family: var(--devanagari);
+  font-size: min(11.2vw, 14.2vh);
+  line-height: 1;
+  letter-spacing: 0;
+  font-weight: 500;
+  padding-bottom: 0;
+  text-shadow:
+    0 0 80px var(--name-glow, rgba(236, 197, 139, 0.14)),
+    0 10px 50px var(--name-shadow, rgba(0, 0, 0, 0.4));
+}
+
+.name-bn {
+  --name-nudge: 0.18em;
+  font-family: var(--bengali);
+  font-size: min(11.4vw, 14.4vh);
+  line-height: 1;
+  letter-spacing: 0;
+  font-weight: 500;
+  padding-bottom: 0;
+  text-shadow:
+    0 0 80px var(--name-glow, rgba(236, 197, 139, 0.14)),
+    0 10px 50px var(--name-shadow, rgba(0, 0, 0, 0.4));
+}
+
+.identity-subtitle {
+  position: absolute;
+  left: 50%;
+  top: calc(46.5% + var(--stack-gap) + 4vh);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 88vw;
+  margin: 0;
+  color: var(--name-sub, rgba(248, 242, 232, 0.94));
+  font-family: var(--serif-display);
+  font-size: clamp(0.86rem, 0.4vw + 0.72rem, 1.08rem);
+  font-weight: 400;
+  font-variation-settings: normal;
+  line-height: 1.6;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-shadow:
+    0 1px 10px rgba(6, 5, 7, 0.8),
+    0 0 30px rgba(6, 5, 7, 0.55);
+  opacity: 0;
+  text-shadow: 0 0 40px var(--name-glow, rgba(0, 0, 0, 0.6));
+}
+
+/* Static trio for the reduced-motion journey. */
+.identity.is-static .name {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.identity.is-static .name-en,
+.identity.is-static .name-hi,
+.identity.is-static .name-bn {
+  --scale: 0.5;
+}
+
+.identity.is-static .name-en {
+  --slot: -1;
+}
+
+.identity.is-static .name-hi {
+  --slot: 0;
+}
+
+.identity.is-static .name-bn {
+  --slot: 1;
+}
+
+.identity.is-static .identity-subtitle {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.identity.is-static .identity-glow {
+  opacity: 0.75 !important;
+}
+
+/* -------------------------------------------------------- scroll invitation */
+
+.scroll-thread {
+  position: absolute;
+  left: 50%;
+  bottom: max(26px, env(safe-area-inset-bottom));
+  z-index: 10;
+  width: 1px;
+  height: 40px;
+  margin-left: -0.5px;
+  background: linear-gradient(180deg, rgba(233, 205, 163, 0) 0%, rgba(233, 205, 163, 0.55) 100%);
+  opacity: 0.26;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------- seam */
+
+.aftermath {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: 96px 24px;
+  background: var(--sand-100);
+  color: #8c8175;
+}
+
+.aftermath-inner {
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 1200ms var(--ease-out),
+    transform 1200ms var(--ease-out);
+}
+
+.aftermath-inner.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.aftermath-line {
+  font-family: var(--serif);
+  font-size: clamp(0.86rem, 0.3vw + 0.78rem, 1rem);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #a2968a;
+}
+
+.aftermath-link {
+  display: inline-block;
+  margin-top: 30px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(140, 129, 117, 0.32);
+  color: #8c8175;
+  font-family: var(--serif);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 300ms var(--ease-out), border-color 300ms var(--ease-out);
+}
+
+.aftermath-link:hover,
+.aftermath-link:focus-visible {
+  color: #5f564c;
+  border-color: rgba(95, 86, 76, 0.6);
+  outline: none;
+}
+
+.aftermath-link:focus-visible {
+  outline: 1px solid rgba(95, 86, 76, 0.55);
+  outline-offset: 5px;
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 760px) {
+  .cinema-stage {
+    --stack-gap: clamp(58px, 8.6vh, 86px);
+  }
+
+  .narrative {
+    padding: 15vh 20px 16vh;
+  }
+
+  .narrative-lines {
+    width: 88vw;
+  }
+
+  .narration-line {
+    font-size: clamp(1.7rem, 6.4vw, 2.7rem);
+    line-height: 1.22;
+  }
+
+  .name-en {
+    font-size: min(21vw, 14.8vh);
+    letter-spacing: 0.012em;
+  }
+
+  .name-hi,
+  .name-bn {
+    font-size: min(17.8vw, 12.5vh);
+  }
+
+  .identity-subtitle {
+    top: calc(46.5% + var(--stack-gap) + 4.4vh);
+    width: 84vw;
+    max-width: 84vw;
+    white-space: normal;
+    text-align: center;
+    font-size: 0.86rem;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+
+  .identity-glow {
+    width: 120vw;
+    height: 58vh;
+  }
+
+  .identity-sweep {
+    width: 78vw;
+    margin-left: -39vw;
+  }
+
+  .scroll-thread {
+    height: 32px;
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 760px) and (orientation: landscape) {
+  .narrative {
+    padding-top: 11vh;
+  }
+
+  .narration-line {
+    font-size: clamp(1.3rem, 3.4vw, 2rem);
+    line-height: 1.22;
+  }
+
+  .name-en {
+    font-size: min(12.2vw, 22.4vh);
+  }
+
+  .name-hi,
+  .name-bn {
+    font-size: min(10.4vw, 19.2vh);
+  }
+
+  .identity-subtitle {
+    top: calc(46.5% + var(--stack-gap) + 4.6vh);
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 761px) {
+  .narrative {
+    padding-top: 15vh;
+  }
+
+  .identity-subtitle {
+    top: calc(46.5% + var(--stack-gap) + 3vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .narration-line,
+  .name,
+  .identity-subtitle {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------- scroll invitation */
+
+/* A constant, bouncing double chevron. It stays on screen for the whole film
+   (the final whiteout covers it, since it sits below that layer). */
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: max(30px, env(safe-area-inset-bottom));
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  color: rgba(246, 242, 233, 0.9);
+}
+
+.scroll-cue__chevrons {
+  width: 30px;
+  height: 40px;
+  stroke: rgba(248, 243, 232, 0.95);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(20, 18, 26, 0.55));
+  animation: cue-bounce 1.55s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes cue-bounce {
+  0%,
+  100% {
+    transform: translateY(-3px);
+    opacity: 0.55;
+  }
+  45% {
+    transform: translateY(7px);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(7px);
+    opacity: 0.85;
+  }
+}
+
+.scroll-cue__label {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.055em;
+  text-transform: none;
+  color: rgba(248, 246, 240, 0.9);
+  text-shadow: 0 1px 12px rgba(8, 7, 12, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue__chevrons {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------- chapter tracker */
+
+.cinema-chapters {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cinema-chapters__item {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(246, 242, 233, 0.32);
+  transition: background 900ms ease;
+}
+
+.cinema-chapters__item.is-active {
+  background: rgba(246, 242, 233, 0.95);
+}
+
+.cinema-chapters__label {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 240, 0.75);
+  text-shadow: 0 1px 12px rgba(8, 7, 12, 0.55);
+}
+
+@media (max-width: 760px) {
+  .cinema-chapters {
+    gap: 8px;
+  }
+
+  .cinema-chapters__label {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .scroll-cue {
+    bottom: max(22px, env(safe-area-inset-bottom));
+    gap: 4px;
+  }
+
+  .scroll-cue__chevrons {
+    width: 25px;
+    height: 34px;
+  }
+
+  .scroll-cue__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Short landscape phones: the stage is wider than 760px, so the portrait
+   mobile rules never fire. Keep the poem and the stack inside the short frame. */
+@media (max-height: 560px) {
+  .world__layer {
+    object-position: 50% 4%;
+  }
+
+  .narrative {
+    padding: 8vh 24px 10vh;
+  }
+
+  .narrative-lines {
+    width: min(1100px, 94vw);
+  }
+
+  .narration-line {
+    font-size: clamp(1.35rem, 3.6vw, 2.1rem);
+    line-height: 1.2;
+  }
+
+  .name-en {
+    font-size: min(10.2vw, 14.8vh);
+  }
+
+  .name-hi,
+  .name-bn {
+    font-size: min(8.8vw, 12.8vh);
+  }
+
+  .cinema-stage {
+    --stack-gap: clamp(40px, 10vh, 56px);
+  }
+
+  .name {
+    top: 42%;
+  }
+
+  .identity-subtitle {
+    top: calc(42% + var(--stack-gap) + 4.2vh);
+    width: 88vw;
+    max-width: 88vw;
+    white-space: normal;
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+
+  .scroll-cue {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 3px;
+  }
+
+  .scroll-cue__chevrons {
+    width: 20px;
+    height: 27px;
+  }
+
+  .scroll-cue__label {
+    font-size: 0.6rem;
+  }
+}
+
+/* ------------------------------------------------------------ low-power tier
+   Detected before first paint (deviceMemory / hardwareConcurrency). These are
+   the only full-screen blends and the widest composited layers left in the
+   temple, so they are what an older GPU feels most. */
+.low-power .grain {
+  display: none;
+}
+
+.low-power .world__warm {
+  mix-blend-mode: normal;
+  opacity: 0.06;
+}

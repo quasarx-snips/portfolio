@@ -1,0 +1,325 @@
+/* ==========================================================================
+   The Palace of Many Worlds — boot veil
+   A full-screen, keyboard-inert overlay layered above the stage. Everything is
+   scoped to `.boot*`; the gate toggles `.boot--ready` / `.boot--exiting`, and
+   the content inside is painted by BootScreen.
+
+   Deliberately cheap: one static gradient stack, no backdrop filters, no
+   filters, no animation on the large surface. Only the veil opacity and a
+   small content lift move, and only while the gate is exiting.
+   ========================================================================== */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  contain: layout paint;
+  padding:
+    max(28px, env(safe-area-inset-top))
+    max(24px, env(safe-area-inset-right))
+    max(30px, env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
+  background:
+    radial-gradient(
+      120% 100% at 50% 40%,
+      rgba(201, 160, 106, 0.07) 0%,
+      rgba(7, 6, 10, 0) 46%
+    ),
+    radial-gradient(
+      circle at 50% 46%,
+      rgba(7, 6, 10, 0) 26%,
+      rgba(4, 3, 9, 0.9) 100%
+    ),
+    var(--ink-900, #07060a);
+  color: var(--sand-200, #f2e9d9);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Readiness only arms the exit transition: the veil stays opaque until the
+   gate adds `.boot--exiting`, so a stalled load can never look half-open. */
+.boot--ready {
+  transition: opacity 480ms var(--ease-out, cubic-bezier(0.16, 0.84, 0.44, 1));
+}
+
+.boot--exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot__content {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vh, 28px);
+  transition:
+    transform 480ms var(--ease-out, cubic-bezier(0.16, 0.84, 0.44, 1)),
+    opacity 480ms var(--ease-out, cubic-bezier(0.16, 0.84, 0.44, 1));
+}
+
+.boot--exiting .boot__content {
+  transform: translate3d(0, -10px, 0);
+  opacity: 0;
+}
+
+/* ---------------------------------------------------------------- the head */
+
+.boot__head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.boot__kicker {
+  font-family: var(--serif, Georgia, 'Times New Roman', serif);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-500, #c9a06a);
+  opacity: 0.88;
+}
+
+/* The single gold hairline: brightest at the left, gone by the right. */
+.boot__rule {
+  display: block;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(201, 160, 106, 0.42) 0%,
+    rgba(201, 160, 106, 0.14) 58%,
+    rgba(201, 160, 106, 0) 100%
+  );
+}
+
+/* -------------------------------------------------------------- the status */
+
+.boot__status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.boot__label {
+  font-family: var(--serif-display, Georgia, 'Times New Roman', serif);
+  font-size: clamp(1.5rem, 1.1vw + 1.22rem, 2.1rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--sand-100, #f8f6f0);
+}
+
+.boot__detail {
+  font-family: var(--serif, Georgia, 'Times New Roman', serif);
+  font-size: clamp(0.86rem, 0.3vw + 0.78rem, 0.98rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--sand-500, #b9a892);
+}
+
+.boot__note {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: var(--sand-700, #6f6459);
+}
+
+.boot__note--quiet {
+  color: rgba(185, 168, 146, 0.62);
+}
+
+/* --------------------------------------------------------------- the meter */
+
+.boot__meter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.4rem;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(4px, 1vh, 10px);
+}
+
+.boot__bar {
+  position: relative;
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: rgba(233, 220, 198, 0.1);
+}
+
+.boot__bar-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+  background: linear-gradient(
+    90deg,
+    var(--gold-600, #a98757) 0%,
+    var(--gold-400, #d8a86b) 62%,
+    var(--gold-200, #f0d3a5) 100%
+  );
+}
+
+.boot__percent {
+  min-width: 3.4rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+  text-align: right;
+  color: var(--sand-500, #b9a892);
+}
+
+/* --------------------------------------------------------------- the pages */
+
+.boot__pages {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.boot__page {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr) 4.2rem;
+  align-items: center;
+  gap: 14px;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--sand-500, #b9a892);
+}
+
+.boot__page-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.boot__page-bar {
+  position: relative;
+  display: block;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(233, 220, 198, 0.1);
+}
+
+.boot__page-fill {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+  background: rgba(201, 160, 106, 0.78);
+}
+
+.boot__page-state {
+  font-size: 0.62rem;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-align: right;
+  text-transform: uppercase;
+  color: rgba(185, 168, 146, 0.55);
+}
+
+.boot__page[data-state='loading'] .boot__page-state {
+  color: var(--gold-200, #f0d3a5);
+}
+
+.boot__page[data-state='ready'] .boot__page-state {
+  color: rgba(201, 160, 106, 0.9);
+}
+
+.boot__page[data-state='failed'] .boot__page-state {
+  color: #c08d7e;
+}
+
+/* ------------------------------------------------------------- small screens */
+
+@media (max-width: 560px) {
+  .boot {
+    padding:
+      max(22px, env(safe-area-inset-top))
+      max(20px, env(safe-area-inset-right))
+      max(24px, env(safe-area-inset-bottom))
+      max(20px, env(safe-area-inset-left));
+  }
+
+  .boot__content {
+    gap: 16px;
+  }
+
+  .boot__kicker {
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+  }
+
+  .boot__meter {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+    gap: 10px;
+  }
+
+  .boot__page {
+    grid-template-columns: 5.2rem minmax(0, 1fr) 3.4rem;
+    gap: 10px;
+    font-size: 0.66rem;
+  }
+
+  .boot__page-state {
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+  }
+}
+
+/* Short landscape phones: keep the rows inside the frame. */
+@media (max-height: 520px) {
+  .boot__content {
+    gap: 12px;
+  }
+
+  .boot__label {
+    font-size: clamp(1.2rem, 4vh, 1.6rem);
+  }
+
+  .boot__pages {
+    gap: 6px;
+  }
+}
+
+/* ------------------------------------------------------------ reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  /* The gate already shortens its own fade; match it here so no transition
+     outlives the overlay. */
+  .boot--ready {
+    transition-duration: 120ms;
+  }
+
+  .boot__content {
+    transition: none;
+  }
+
+  .boot--exiting .boot__content {
+    transform: none;
+    opacity: 1;
+  }
+
+  .boot__bar-fill,
+  .boot__page-fill {
+    will-change: auto;
+  }
+}

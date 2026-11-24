@@ -1,0 +1,352 @@
+/* ==========================================================================
+   Cosmic prologue — a fixed first screen. No scroll: press and hold the hole,
+   the fall into it plays on its own, then the temple takes over.
+
+   Every selector is scoped to .cosmos* so the temple film is untouched.
+   Layer order inside .cosmos-stage (bottom to top):
+     stage group (CSS fallback + WebGL canvas) → vignette → hint → white sheet
+   ========================================================================== */
+
+.cosmos {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  background: #04030a;
+  /* The white -> temple dissolve is driven per frame from the sequence loop
+     (inline opacity) so it pauses with the timeline and never flashes. */
+  opacity: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* A thin focus frame is the only chrome the prologue may show; :focus-visible
+   keeps it invisible for pointer/touch input, and the outline (unlike a
+   box-shadow) paints above the canvas. */
+.cosmos:focus-visible {
+  outline: 1px solid rgba(240, 232, 210, 0.4);
+  outline-offset: -3px;
+}
+
+.cosmos--holding,
+.cosmos--revealed {
+  will-change: opacity;
+}
+
+.cosmos--revealed {
+  pointer-events: none;
+}
+
+.cosmos-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  contain: layout paint;
+  background: #04030a;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.cosmos-shake {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 46%;
+  pointer-events: none;
+}
+
+/* The fall is carried entirely by the shader's camera. No CSS impulse here:
+   a transform kick read as a shake and made the white handover feel abrupt. */
+
+.cosmos-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Visitor escape hatch from the press-and-hold prologue. */
+.cosmos-skip {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 9;
+  padding: 10px 16px;
+  border: 1px solid rgba(240, 232, 210, 0.35);
+  border-radius: 2px;
+  background: rgba(6, 4, 10, 0);
+  color: rgba(246, 242, 233, 0.85);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cosmos-skip:hover,
+.cosmos-skip:focus-visible {
+  background: rgba(6, 4, 10, 0.35);
+  color: #f6f2e9;
+  outline: none;
+}
+
+/* Press feedback: an almost invisible vignette closes in while charging. The
+   rim charge itself lives in the shader. Driven by a CSS animation because the
+   hold has a fixed duration, so no per-frame style writes are needed. */
+.cosmos-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(4, 3, 10, 0) 0%,
+    rgba(4, 3, 10, 0) 40%,
+    rgba(4, 3, 10, 0.34) 78%,
+    rgba(4, 3, 10, 0.62) 100%
+  );
+  transition: opacity 240ms linear;
+}
+
+.cosmos--charging .cosmos-vignette {
+  animation: cosmos-vignette-charge 720ms cubic-bezier(0.4, 0, 0.5, 1) forwards;
+}
+
+@keyframes cosmos-vignette-charge {
+  from {
+    opacity: 0;
+  }
+  55% {
+    opacity: 0.16;
+  }
+  to {
+    opacity: 0.3;
+  }
+}
+
+/* A slow ring asks to be pressed when the visitor has been still a while.
+   Sized from --hole (the horizon diameter published on the stage). A dark
+   outer halo keeps the light border readable where it crosses the bright
+   accretion disk, and the narrow-screen variant stays inside the viewport
+   instead of clipping off both edges of a phone. */
+.cosmos-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: min(calc(var(--hole, 28vmin) * 1.24), 84vw);
+  height: min(calc(var(--hole, 28vmin) * 1.24), 84vw);
+  border: 1px solid rgba(255, 248, 235, 0.52);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(2, 3, 10, 0.26),
+    0 0 18px rgba(255, 190, 110, 0.28),
+    0 0 30px rgba(2, 3, 10, 0.5);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.94);
+  pointer-events: none;
+}
+
+.cosmos-hint::after {
+  content: '';
+  position: absolute;
+  inset: -7%;
+  border: 1px solid rgba(255, 244, 226, 0.16);
+  border-radius: 50%;
+}
+
+.cosmos.is-hinting .cosmos-hint {
+  animation: cosmos-hint 4.6s cubic-bezier(0.2, 0.55, 0.3, 1) infinite;
+}
+
+/* On a phone the horizon is nearly the full width, so the ring hugs it more
+   tightly and never grows past the screen edge. */
+@media (max-width: 760px) {
+  .cosmos-hint {
+    width: min(calc(var(--hole, 28vmin) * 1.06), 88vw);
+    height: min(calc(var(--hole, 28vmin) * 1.06), 88vw);
+  }
+
+  .cosmos-hint::after {
+    inset: -5%;
+  }
+
+  .cosmos.is-hinting .cosmos-hint {
+    animation-name: cosmos-hint-tight;
+  }
+}
+
+@keyframes cosmos-hint {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  14% {
+    opacity: 0.55;
+  }
+  58% {
+    opacity: 0.16;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.34);
+  }
+}
+
+@keyframes cosmos-hint-tight {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+  14% {
+    opacity: 0.58;
+  }
+  58% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.14);
+  }
+}
+
+/* The white sheet is the literal token value: at the moment of reveal this
+   pixel is exactly #F8F6F0, so the dissolve starts from flat warm white. */
+.cosmos-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: #f8f6f0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   CSS fallback: shown when WebGL is unavailable or the context is lost.
+   A deliberate still — shadow, photon ring, hot band, upper halo and the
+   secondary arc — built from gradients and scaled by the fall progress.
+   It remains a normal press target because the stage owns the input.
+   -------------------------------------------------------------------------- */
+
+.cosmos-fallback {
+  position: absolute;
+  inset: -14%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  transform: scale(calc(1 + var(--p, 0) * 3.4 + var(--charge, 0) * 0.03));
+  background:
+    /* hot band crossing the shadow, in front of it */
+    radial-gradient(
+      ellipse calc(var(--hole, 28vmin) * 0.92) calc(var(--hole, 28vmin) * 0.085) at 50% 50%,
+      rgba(255, 249, 232, 0.97) 0%,
+      rgba(255, 214, 154, 0.72) 34%,
+      rgba(238, 151, 55, 0.36) 62%,
+      rgba(120, 62, 20, 0) 86%
+    ),
+    /* photon ring */
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 248, 235, 0) calc(var(--hole, 28vmin) * 0.486),
+      rgba(255, 248, 235, 0.62) calc(var(--hole, 28vmin) * 0.5),
+      rgba(255, 214, 160, 0.2) calc(var(--hole, 28vmin) * 0.516),
+      rgba(255, 248, 235, 0) calc(var(--hole, 28vmin) * 0.53)
+    ),
+    /* opaque shadow, feathered at the horizon (in front of halo + arc) */
+    radial-gradient(
+      circle at 50% 50%,
+      #000 0%,
+      #000 calc(var(--hole, 28vmin) * 0.472),
+      rgba(0, 0, 0, 0.86) calc(var(--hole, 28vmin) * 0.5),
+      rgba(0, 0, 0, 0) calc(var(--hole, 28vmin) * 0.515)
+    ),
+    /* secondary arc under the shadow */
+    radial-gradient(
+      ellipse calc(var(--hole, 28vmin) * 0.56) calc(var(--hole, 28vmin) * 0.15) at 50% 62%,
+      rgba(255, 190, 110, 0) 0%,
+      rgba(255, 205, 145, 0.34) 55%,
+      rgba(214, 126, 48, 0) 78%
+    ),
+    /* lensed halo over the top, outside the horizon */
+    radial-gradient(
+      ellipse calc(var(--hole, 28vmin) * 0.6) calc(var(--hole, 28vmin) * 0.43) at 50% 41%,
+      rgba(255, 236, 202, 0.5) 0%,
+      rgba(244, 186, 110, 0.3) 42%,
+      rgba(178, 96, 38, 0.12) 68%,
+      rgba(60, 28, 12, 0) 84%
+    ),
+    /* dust glow and near-black sky */
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 226, 180, 0.18) 0%,
+      rgba(120, 96, 70, 0) 34%
+    ),
+    radial-gradient(circle at 50% 48%, #0a0812 0%, #05040c 56%, #030208 100%);
+}
+
+.cosmos.is-fallback .cosmos-fallback {
+  opacity: 1;
+}
+
+/* A sparse starfield keeps the fallback from reading as a bare eclipse. It is
+   painted above the gradients but masked clear around the hole, band and halo,
+   so only the empty sky sparkles and nothing crosses the black-hole silhouette.
+   The stars scale with the same transform as the hole, so they fly outward on
+   the fall exactly like the shader sky. */
+.cosmos-fallback::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  background-repeat: no-repeat;
+  background-image:
+    radial-gradient(1.2px 1.2px at 15% 24%, rgba(238, 243, 255, 0.72) 0 42%, transparent 100%),
+    radial-gradient(1px 1px at 27% 12%, rgba(255, 248, 235, 0.5) 0 45%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 18%, rgba(226, 236, 255, 0.6) 0 40%, transparent 100%),
+    radial-gradient(1px 1px at 91% 33%, rgba(255, 244, 226, 0.5) 0 45%, transparent 100%),
+    radial-gradient(1px 1px at 9% 46%, rgba(255, 250, 240, 0.62) 0 45%, transparent 100%),
+    radial-gradient(1.3px 1.3px at 70% 9%, rgba(255, 250, 240, 0.5) 0 40%, transparent 100%),
+    radial-gradient(1px 1px at 40% 7%, rgba(226, 236, 255, 0.48) 0 45%, transparent 100%),
+    radial-gradient(1.4px 1.4px at 5% 70%, rgba(255, 248, 235, 0.55) 0 40%, transparent 100%),
+    radial-gradient(1px 1px at 22% 84%, rgba(238, 243, 255, 0.48) 0 45%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 88% 76%, rgba(255, 246, 230, 0.6) 0 40%, transparent 100%),
+    radial-gradient(1px 1px at 76% 90%, rgba(226, 236, 255, 0.42) 0 45%, transparent 100%),
+    radial-gradient(1.1px 1.1px at 61% 82%, rgba(255, 250, 240, 0.44) 0 42%, transparent 100%),
+    radial-gradient(1px 1px at 46% 94%, rgba(238, 243, 255, 0.4) 0 45%, transparent 100%),
+    radial-gradient(1.6px 1.6px at 33% 58%, rgba(255, 246, 230, 0.5) 0 38%, transparent 100%),
+    radial-gradient(1px 1px at 97% 58%, rgba(255, 250, 240, 0.44) 0 45%, transparent 100%),
+    radial-gradient(1.2px 1.2px at 63% 31%, rgba(226, 236, 255, 0.4) 0 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 calc(var(--hole, 28vmin) * 0.58),
+    #000 calc(var(--hole, 28vmin) * 0.64)
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 calc(var(--hole, 28vmin) * 0.58),
+    #000 calc(var(--hole, 28vmin) * 0.64)
+  );
+}
+
+.cosmos.is-fallback .cosmos-canvas {
+  display: none;
+}
+
+/* Within the prologue the temple is held still behind the white; the visitor
+   scrolls only after the pause, so the film's own timing is never rewritten. */
+@media (prefers-reduced-motion: reduce) {
+  .cosmos {
+    display: none;
+  }
+
+  .cosmos--charging .cosmos-vignette,
+  .cosmos.is-hinting .cosmos-hint {
+    animation: none;
+  }
+}
