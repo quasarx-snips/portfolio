@@ -1,85 +1,74 @@
-# Bibhab Saha — Portfolio
+# The Palace of Many Worlds
 
-Personal portfolio. Next.js 16, React 19, Tailwind CSS v4, Motion.
+A scroll-driven opening cinematic: it begins on a black hole, the visitor presses
+and holds to fall through it, and the temple film unrolls from there.
 
-## Repository layout
+Vite + React 19 + GSAP, no framework, no CMS. Everything rendered is in `src/`
+and `public/`.
 
-This is an npm-workspaces monorepo with two independent apps:
-
-- **root** — the Next.js portfolio (this README, `app/`, `components/`, `lib/`).
-  Deploys to Vercel from `main`; `vercel.json` adds security headers.
-- **`apps/cinematic`** — "The Palace of Many Worlds", the scroll-driven opening
-  cinematic (Vite + React + GSAP). Runs on its own toolchain and never shares
-  build output with the portfolio.
-
-```bash
-npm install            # installs both workspaces (hoisted to root node_modules)
-npm run dev            # portfolio      → http://localhost:3000
-npm run cinematic:dev  # cinematic      → http://localhost:5188
-npm run cinematic:build / cinematic:preview / cinematic:typecheck
-```
-
-QA harnesses live in `qa/` (baseline timing + the screenshot harness). They are
-development-only and never ship.
-
-## Getting started
+## Run it
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run dev        # http://localhost:5188  (strictPort)
 ```
+
+Press and hold the black hole (or hold Space/Enter) to enter, or use
+"Skip the opening". Append any `#hash` to the URL to land straight in the temple.
+
+```bash
+npm run build      # tsc -b && vite build -> dist/
+npm run preview    # serves dist/ on :4173 (build first)
+npm run typecheck  # tsc -b --noEmit
+```
+
+## Layout
+
+```
+index.html              boot shell, tier probe, temple preload
+src/main.tsx            mount point
+src/App.tsx             boot gate -> prologue -> film
+src/cine/cosmos/        the black hole: CosmicOpening (timeline), bh-render (shader)
+src/cine/               the temple film: Cinematic, Chapters, frame, film
+src/cine/art/           dust + smoke engines
+src/cine/scenes/        World, Identity, Narrative, Atmosphere
+src/load/               asset manifest, boot store, loader
+src/perf/               device tier, quality, frame governor
+src/styles/             tokens, boot, cosmos, cinematic, reduced-motion
+public/world/           temple plates (1280/2000 webp + jpg fallback)
+qa/                     dev-only timing harnesses + baselines
+```
+
+## The sequence
+
+```
+hold 0.7s -> fall 3.0s -> white 0.2s -> reveal 0.9s -> temple pause 2.6s -> scroll unlocked
+```
+
+Scrolling is locked until the handover. `prefers-reduced-motion` swaps the
+whole thing for a static, readable version via `ReducedExperience`.
+
+## QA (development only)
+
+```bash
+npm run build && npm run preview &   # :4173, production build
+node qa/gate-baseline.mjs            # boot -> veil -> prologue interactive
+node qa/baseline.mjs                 # full first-load path, wall clock
+
+npm run dev &                        # :5188, needs __cosmos hooks
+node qa/prologue-baseline.mjs        # prologue leg timings
+node qa/scroll-probe.mjs             # scroll-lock / unlock probe
+```
+
+The harnesses drive headless Chrome over CDP on `localhost:9222`; start Chrome
+with `--remote-debugging-port=9222 --user-data-dir=<temp>` first. Baselines live
+in `qa/baselines/`. The screenshot harness is
+`node qa/screenshot-harness/capture.mjs --url=http://localhost:5188/ --out=qa/shots`.
+
+`window.__cosmos` (dev only) exposes `press()`, `release()`, `phase()`,
+`progress()`, `timeline()` for those runs and is not in production builds.
 
 ## Deploy
 
-Push to `main` and Vercel builds it automatically. Nothing to configure —
-`vercel.json` only adds security headers.
-
-## Editing your content
-
-Everything user-facing lives in **`lib/site.config.ts`**: name, headline,
-tagline, awards, education, the six featured projects, the `moreProjects`
-list, skills, and links.
-
-Two TODOs remain in that file, both marked `TODO`:
-1. `links.email` — currently `you@example.com`
-2. `links.resume` — drop your PDF into `public/` as `resume.pdf`
-
-Also update `metadataBase` and `openGraph.url` in `app/layout.tsx` once your
-domain is live.
-
-## Design system
-
-Colour tokens are defined once as CSS variables in `app/globals.css` and
-exposed to Tailwind via `@theme inline`.
-
-| Token | Value | Use |
-| --- | --- | --- |
-| `--text` | `#FFFFFF` | body + headings |
-| `--background` | `#2b1517` | page canvas |
-| `--primary` | `#d97d76` | CTAs, links, focus ring |
-| `--secondary` | `#f3d1cc` | soft highlights |
-| `--accent` | `#eba39c` | dividers, hover states |
-
-Derived tokens (`--surface`, `--border`, `--muted`, ...) build the elevation
-ramp. `--border-strong` sits at 3.02:1 against the background, which meets the
-WCAG 3:1 minimum for meaningful boundaries.
-
-## Performance / accessibility
-
-- The particle field is **skipped on mobile** and on coarse-pointer devices,
-  and never runs when `prefers-reduced-motion: reduce` is set.
-- The custom cursor mounts only on fine pointers with motion allowed.
-- Every animation collapses to static content under reduced motion.
-- The particle canvas freezes via `IntersectionObserver` when scrolled out of
-  view and when the tab is hidden.
-- `devicePixelRatio` is capped at 2.
-- All decorative layers are `aria-hidden` and `pointer-events: none`.
-
-## Scripts
-
-```bash
-npm run dev      # dev server (Turbopack)
-npm run build    # production build
-npm run start    # serve the production build
-npm run lint     # eslint
-```
+Vercel builds this repo as a static Vite app (`vercel.json` sets
+`outputDirectory: dist` and security headers). Push and it ships.
