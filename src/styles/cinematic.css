@@ -238,6 +238,152 @@ html::-webkit-scrollbar {
 }
 
 
+/*
+ * Mist at the foot of the elevation: three paper-white veils drifting over the
+ * steps, never over the spires. Transform-only and masked at the top, so it
+ * reads as watercolour wet-in-wet rather than a layer of smoke.
+ */
+.temple-door__fog {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 26%;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 22%, transparent 100%);
+}
+
+.temple-door__fog > span {
+  position: absolute;
+  left: -40%;
+  bottom: -14%;
+  width: 180%;
+  height: 100%;
+  background-repeat: no-repeat;
+  will-change: transform;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.temple-door__fog-a {
+  background-image:
+    radial-gradient(ellipse 22% 62% at 12% 72%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 68%),
+    radial-gradient(ellipse 27% 74% at 44% 64%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(ellipse 20% 58% at 71% 74%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 66%),
+    radial-gradient(ellipse 24% 66% at 93% 68%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 70%);
+  filter: blur(14px);
+  opacity: 0.5;
+  animation-name: temple-fog-a;
+  animation-duration: 26s;
+}
+
+.temple-door__fog-b {
+  background-image:
+    radial-gradient(ellipse 30% 84% at 22% 58%, rgba(246, 246, 246, 0.8), rgba(246, 246, 246, 0) 72%),
+    radial-gradient(ellipse 26% 92% at 58% 52%, rgba(244, 244, 245, 0.72), rgba(244, 244, 245, 0) 74%),
+    radial-gradient(ellipse 34% 80% at 88% 60%, rgba(246, 246, 247, 0.66), rgba(246, 246, 247, 0) 72%);
+  filter: blur(24px);
+  opacity: 0.38;
+  animation-name: temple-fog-b;
+  animation-duration: 38s;
+}
+
+.temple-door__fog-c {
+  background-image: linear-gradient(to top, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 88%);
+  filter: blur(40px);
+  animation-name: temple-fog-c;
+  animation-duration: 50s;
+}
+
+@keyframes temple-fog-a {
+  from {
+    transform: translate3d(-5.5%, 1.2%, 0) scale(1.02);
+  }
+
+  to {
+    transform: translate3d(6%, -2.4%, 0) scale(1.06);
+  }
+}
+
+@keyframes temple-fog-b {
+  from {
+    transform: translate3d(6%, 0, 0) scale(1.05);
+  }
+
+  to {
+    transform: translate3d(-5.5%, -2.6%, 0) scale(1.01);
+  }
+}
+
+@keyframes temple-fog-c {
+  from {
+    transform: translate3d(-2.6%, 0, 0) scale(1);
+    opacity: 0.28;
+  }
+
+  to {
+    transform: translate3d(3%, -1.6%, 0) scale(1.08);
+    opacity: 0.42;
+  }
+}
+
+/*
+ * The door turns to wood when the pointer comes near, and the colour spills
+ * across it rather than switching on. The wood is a second copy of the same
+ * plate, cropped to the leaves and recomposed: sepia for the timber, a damped
+ * brightness, and a contrast lift that leaves the carved panels and the studs
+ * as crisp as the paint allows.
+ *
+ * The spill is one ragged wash, four offset ellipses that grow from the point
+ * where the hand came in and a fifth that floods whatever they have not
+ * reached, all widened by the single --spill the pointer eases. So the leaves
+ * darken from the side the hand arrived on, and drain back to it.
+ */
+.temple-door__warm {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--warm, 0);
+  border-radius: 2px;
+  mask-image:
+    radial-gradient(ellipse max(0%, calc(var(--spill, 0) * 150%)) max(0%, calc(var(--spill, 0) * 97%)) at var(--seed-x, 50%) var(--seed-y, 46%), #000 72%, transparent 100%),
+    radial-gradient(ellipse max(0%, calc(var(--spill, 0) * 135%)) max(0%, calc(var(--spill, 0) * 87%)) at calc(var(--seed-x, 50%) - 5%) calc(var(--seed-y, 46%) - 7%), #000 72%, transparent 100%),
+    radial-gradient(ellipse max(0%, calc(var(--spill, 0) * 128%)) max(0%, calc(var(--spill, 0) * 83%)) at calc(var(--seed-x, 50%) + 6%) calc(var(--seed-y, 46%) + 5%), #000 72%, transparent 100%),
+    radial-gradient(ellipse max(0%, calc(var(--spill, 0) * 118%)) max(0%, calc(var(--spill, 0) * 76%)) at calc(var(--seed-x, 50%) + 2%) calc(var(--seed-y, 46%) - 10%), #000 72%, transparent 100%),
+    radial-gradient(ellipse max(0%, calc(var(--spill, 0) * 112%)) max(0%, calc(var(--spill, 0) * 72%)) at calc(var(--seed-x, 50%) - 7%) calc(var(--seed-y, 46%) + 9%), #000 72%, transparent 100%),
+    /* the flood: whatever the wash has not reached by the last fifth */
+    radial-gradient(ellipse max(0%, calc((var(--spill, 0) - 0.55) * 350%)) max(0%, calc((var(--spill, 0) - 0.55) * 226%)) at 50% 55%, #000 72%, transparent 100%);
+  mask-repeat: no-repeat;
+}
+
+.temple-door__wood {
+  position: absolute;
+  display: block;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 48%;
+  filter: sepia(0.58) hue-rotate(-14deg) saturate(1) brightness(0.62) contrast(1.85);
+}
+
+@media (min-aspect-ratio: 2/1) {
+  .temple-door__wood {
+    object-fit: contain;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .temple-door__fog > span {
+    animation: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .temple-door__fog {
+    height: 22%;
+  }
+}
+
 /* ------------------------------------------------------------------- world */
 
 .world {
