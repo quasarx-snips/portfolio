@@ -1,4 +1,4 @@
-# `.qa/` — visual QA screenshot harness
+# `qa/screenshot-harness/` — visual QA screenshot harness
 
 Self-contained, zero-dependency harness for capturing the scroll-driven
 cinematic ("The Palace of Many Worlds") at fixed progress values. Drives
@@ -25,7 +25,7 @@ From the project root:
 
 ```bash
 npm run dev
-# Vite serves the app at http://localhost:5178/  (strictPort, see vite.config.ts)
+# Vite serves the app at http://localhost:5188/  (strictPort, see vite.config.ts)
 ```
 
 Keep it running in a separate terminal while you capture.
@@ -34,26 +34,26 @@ Keep it running in a separate terminal while you capture.
 
 ```bash
 # Desktop 1440x900 — progress sweep (default: 0, 0.2, 0.4, 0.6, 0.8, 0.95, 1)
-node .qa/capture.mjs --url=http://localhost:5178/ --out=.qa/shots --width=1440 --height=900 --prefix=desktop
+node qa/screenshot-harness/capture.mjs --url=http://localhost:5188/ --out=.qa/shots --width=1440 --height=900 --prefix=desktop
 
 # Mobile portrait 390x844 (touch + mobile emulation)
-node .qa/capture.mjs --url=http://localhost:5178/ --out=.qa/shots --width=390 --height=844 --mobile --prefix=m390x844
+node qa/screenshot-harness/capture.mjs --url=http://localhost:5188/ --out=.qa/shots --width=390 --height=844 --mobile --prefix=m390x844
 
 # Mobile landscape 844x390
-node .qa/capture.mjs --url=http://localhost:5178/ --out=.qa/shots --width=844 --height=390 --mobile --prefix=m844x390
+node qa/screenshot-harness/capture.mjs --url=http://localhost:5188/ --out=.qa/shots --width=844 --height=390 --mobile --prefix=m844x390
 
 # Reduced motion (prefers-reduced-motion: reduce)
 #   - emulates the media feature via CDP
 #   - does NOT call window.__palace.force()
 #   - captures the top of the page plus the optional --scroll positions
-node .qa/capture.mjs --url=http://localhost:5178/ --out=.qa/shots --width=1440 --height=900 --reduced --scroll=0,900,1800 --prefix=reduced
+node qa/screenshot-harness/capture.mjs --url=http://localhost:5188/ --out=.qa/shots --width=1440 --height=900 --reduced --scroll=0,900,1800 --prefix=reduced
 ```
 
 ### Options
 
 | Flag | Default | Meaning |
 | --- | --- | --- |
-| `--url=<url>` | `http://localhost:5178/` | Page to capture (`http(s)://` or `file://`) |
+| `--url=<url>` | `http://localhost:5188/` | Page to capture (`http(s)://` or `file://`) |
 | `--out=<dir>` | `.qa/shots` | Output directory (created recursively) |
 | `--width=<px>` | `1440` | Viewport width |
 | `--height=<px>` | `900` | Viewport height |
@@ -84,7 +84,7 @@ any failure.
 ## 3. Build the contact sheet
 
 ```bash
-node .qa/make-sheet.mjs --dir=.qa/shots --out=.qa/contact-sheet.html
+node qa/screenshot-harness/make-sheet.mjs --dir=.qa/shots --out=.qa/contact-sheet.html
 ```
 
 Generates a dark, responsive, **self-contained** HTML sheet (all PNGs embedded

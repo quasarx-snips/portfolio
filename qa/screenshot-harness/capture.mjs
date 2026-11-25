@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * .qa/capture.mjs — visual QA screenshot harness for "The Palace of Many Worlds".
+ * qa/screenshot-harness/capture.mjs — visual QA screenshot harness for "The Palace of Many Worlds".
  *
  * Zero npm dependencies. Node 22+ (uses global fetch + global WebSocket).
  * Launches headless Chrome/Edge with the DevTools protocol, drives the debug
  * contract `window.__palace.force(progress)` (dev builds only) and writes PNGs.
  *
- * See .qa/README.md for usage.
+ * See qa/screenshot-harness/README.md for usage.
  */
 
 import { spawn, spawnSync } from 'node:child_process';
@@ -21,7 +21,7 @@ const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
 const CHROME_PROFILE_DIR = path.join(SCRIPT_DIR, '.chrome-profile');
 
 const DEFAULTS = {
-  url: 'http://localhost:5178/',
+  url: 'http://localhost:5188/',
   out: path.join(SCRIPT_DIR, 'shots'),
   width: 1440,
   height: 900,
@@ -44,7 +44,7 @@ const CHROME_CANDIDATES = [
 
 function usage(exitCode) {
   const lines = [
-    'Usage: node .qa/capture.mjs [options]',
+    'Usage: node qa/screenshot-harness/capture.mjs [options]',
     '',
     '  --url=<url>          Page to capture (default: ' + DEFAULTS.url + ')',
     '  --out=<dir>          Output directory for PNGs (default: .qa/shots)',
