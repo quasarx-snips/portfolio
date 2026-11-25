@@ -63,6 +63,12 @@ export interface Frame {
   grain: number;
   vignette: number;
   primordial: number;
+  /** The last beat: the door the rooms begin behind. */
+  temple: {
+    opacity: number;
+    scale: number;
+    rise: number;
+  };
 }
 
 // Each line owns its own window: it arrives, holds, and is gone before the
@@ -151,13 +157,19 @@ export function getFrame(rawP: number): Frame {
   const back = smoothstep(p, 0.66, 0.79);
   const mid = smoothstep(p, 0.69, 0.83);
   const front = smoothstep(p, 0.722, 0.87);
-  const coverage = smoothstep(p, 0.8, 0.91);
+  // The veil screens the world completely, then settles away as the door
+  // arrives, so the last beat is never wiped out by its own atmosphere.
+  const coverage = smoothstep(p, 0.8, 0.9) * (1 - smoothstep(p, 0.9, 0.975));
 
   const dust =
     (0.16 + 0.26 * smoothstep(p, 0.02, 0.2) + 0.2 * smoothstep(p, 0.37, 0.45)) *
     (1 - smoothstep(p, 0.66, 0.8));
 
-  const white = smoothstep(p, 0.93, 0.985);
+  const white = smoothstep(p, 0.955, 0.998);
+
+  // The threshold: it begins only once the names are gone and the smoke has
+  // reached its widest, so the frame holds nothing but the door resolving.
+  const arrival = smoothstep(p, 0.865, 0.945);
 
   return {
     p,
@@ -186,12 +198,19 @@ export function getFrame(rawP: number): Frame {
       mid,
       front,
       coverage,
-      tone: smoothstep(p, 0.81, 0.955),
-      bright: smoothstep(p, 0.78, 0.96),
+      // Held short of white: the arriving plate's paper supplies the white,
+      // so the smoke can stay a warm haze the door resolves out of.
+      tone: 0.8 * smoothstep(p, 0.81, 0.93),
+      bright: 0.55 * smoothstep(p, 0.79, 0.94),
     },
     white,
-    grain: 0.095 * (1 - smoothstep(p, 0.9, 0.968)),
-    vignette: 0.68 * (1 - smoothstep(p, 0.855, 0.93)),
+    grain: 0.095 * (1 - smoothstep(p, 0.88, 0.94)),
+    vignette: 0.68 * (1 - smoothstep(p, 0.82, 0.9)),
     primordial: 1 - smoothstep(p, 0.03, 0.17),
+    temple: {
+      opacity: arrival,
+      scale: mix(1.06, 1, easeOutCubic(range(p, 0.865, 1))),
+      rise: 26 * (1 - easeOutCubic(range(p, 0.865, 0.975))),
+    },
   };
 }

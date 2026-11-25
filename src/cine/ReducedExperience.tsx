@@ -16,6 +16,7 @@ import Identity from './scenes/Identity';
 import World from './scenes/World';
 import Narrative from './scenes/Narrative';
 import Smoke from './scenes/Smoke';
+import TempleDoor from './scenes/TempleDoor';
 import { useViewMode } from './useViewMode';
 import '../styles/reduced.css';
 
@@ -27,6 +28,7 @@ import '../styles/reduced.css';
 const BEGINNING_P = 0.2;
 const IDENTITY_P = 0.66;
 const DISSOLUTION_P = 0.86;
+const THRESHOLD_P = 0.96;
 
 /**
  * One still frame of the film. `Film` computes its frame in the constructor
@@ -139,7 +141,20 @@ export default function ReducedExperience() {
         </StaticFilm>
       </section>
 
-      {/* Act IV — White: the held endpoint, no text, no interface. */}
+      {/*
+        Act IV — The Threshold: the door the rooms begin behind, held as a
+        still. Same plate, same paper, no motion beyond the single fade.
+      */}
+      <section className="rm-act rm-act--threshold">
+        <h2 className="sr-only">The Threshold</h2>
+        <StaticFilm p={THRESHOLD_P}>
+          <div className="rm-scene rm-reveal">
+            <TempleDoor />
+          </div>
+        </StaticFilm>
+      </section>
+
+      {/* Act V — White: the held endpoint, no text, no interface. */}
       <section className="rm-act rm-act--white" aria-hidden="true">
         <div className="rm-white-surface" />
       </section>

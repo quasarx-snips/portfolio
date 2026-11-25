@@ -267,20 +267,16 @@
 
 /* --------------------------------------------------------------- seam */
 
+/* The sheet the film's paper becomes. At the first pixel of the corridor it
+   covers the whole stage, so the threshold hands over without a cut; it then
+   clears over the first bay and the hall is simply there. */
 .corridor__seam {
   position: absolute;
-  inset: 0 0 auto;
+  inset: 0;
   z-index: 4;
-  height: 52svh;
   pointer-events: none;
   opacity: 0;
-  background: linear-gradient(
-    180deg,
-    var(--sand-100) 0%,
-    rgba(248, 246, 240, 0.7) 22%,
-    rgba(248, 246, 240, 0.22) 52%,
-    rgba(248, 246, 240, 0) 100%
-  );
+  background: var(--sand-100);
   will-change: opacity;
 }
 

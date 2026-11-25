@@ -116,8 +116,9 @@ export function drawSmoke(
       ctx.fillRect(0, 0, width, height);
     }
 
-    // A soft veil that crosses the name where the letters are being absorbed.
-    const veil = smoothstep(p, 0.72, 0.86) * 0.5;
+    // A soft veil that crosses the name where the letters are being absorbed,
+    // and then settles as the door arrives so it cannot wash the plate out.
+    const veil = smoothstep(p, 0.72, 0.86) * 0.5 * (1 - smoothstep(p, 0.9, 0.965));
     if (veil > 0.003) {
       const gradient = ctx.createLinearGradient(0, height * 0.2, 0, height * 0.84);
       gradient.addColorStop(0, rgba(rgb, 0));
@@ -166,7 +167,7 @@ export function drawSmoke(
       const alpha =
         layer.alpha *
         local *
-        (layer.part === 'front' ? 0.62 + 0.5 * coverage : 1) *
+        (layer.part === 'front' ? 0.3 + 0.82 * coverage : 1) *
         (0.7 + 0.3 * smooth01(puff.scale));
 
       ctx.globalAlpha = clamp01(alpha);
@@ -188,7 +189,7 @@ export function drawSmoke(
 
   // A final bloom keeps the brightest smoke from reading as flat paper.
   if (part === 'front' && smoke.bright > 0.05) {
-    const bloom = smoothstep(p, 0.79, 0.95) * 0.5;
+    const bloom = smoothstep(p, 0.79, 0.95) * 0.5 * (1 - smoothstep(p, 0.9, 0.97));
     const gradient = ctx.createRadialGradient(
       width * 0.5,
       height * 0.44,

@@ -64,6 +64,10 @@
   );
 }
 
+.rm-act--threshold {
+  background: #fcfbf6;
+}
+
 .rm-act--white {
   background: var(--sand-100);
 }

@@ -183,6 +183,61 @@ html::-webkit-scrollbar {
 }
 
 
+/* ------------------------------------------------------------ the threshold */
+
+/*
+ * The last beat: the watercolour elevation of the door. It rises out of the
+ * settling smoke after the names dissolve, and its paper becomes the white the
+ * corridor opens on, so the film hands over without a cut.
+ */
+.temple-door {
+  position: absolute;
+  inset: 0;
+  /* Over the front smoke: once the plate is opaque the paper must stay clean,
+     and while it fades in the smoke still reads through it. */
+  z-index: 7;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* Sampled from the plate's own paper, so the letterboxed fit at very wide
+     aspects has no visible seam against it. */
+  background: #fcfbf6;
+  transform-origin: 50% 54%;
+  will-change: transform, opacity;
+}
+
+.temple-door.is-ready {
+  visibility: visible;
+}
+
+.temple-door__picture {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.temple-door__plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The doorway sits on the optical centre in every crop. */
+  object-position: 50% 48%;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Wider than the plate's 16:9: keep the whole elevation rather than cropping
+   the spire, and let its own paper cover the bands. */
+@media (min-aspect-ratio: 2/1) {
+  .temple-door__plate {
+    object-fit: contain;
+  }
+}
+
+
 /* ------------------------------------------------------------------- world */
 
 .world {

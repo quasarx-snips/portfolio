@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import CorridorHud from './CorridorHud';
 import RoomView from './Room';
-import { corridorProgress, isNear, readCorridor, roomPose } from './geometry';
+import { corridorProgress, isNear, readCorridor, roomPose, smoothstep } from './geometry';
 import { KIND_LABEL, ROOMS, roomIndex } from './rooms';
 import '../styles/corridor.css';
 
@@ -98,10 +98,11 @@ export default function Corridor() {
       if (barRef.current) {
         barRef.current.style.transform = `scaleX(${corridorProgress(frame.depth, COUNT).toFixed(4)})`;
       }
-      // The seam belongs to the hand-off from the film's white; a deep link
-      // lands inside the hall and has no white to clear.
+      // The seam belongs to the hand-off from the film's paper; a deep link
+      // lands inside the hall and has no sheet to clear. The eased curve holds
+      // it fully white through the first moment, then lets the hall through.
       if (seamRef.current && fromFilm) {
-        seamRef.current.style.opacity = Math.max(0, 1 - frame.depth / 0.62).toFixed(3);
+        seamRef.current.style.opacity = (1 - smoothstep(0, 0.45, frame.depth)).toFixed(3);
       }
 
       // The counter follows the room that owns the screen: the crossfade is
