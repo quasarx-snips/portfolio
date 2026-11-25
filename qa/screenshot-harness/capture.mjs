@@ -18,11 +18,11 @@ import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
-const CHROME_PROFILE_DIR = path.join(SCRIPT_DIR, '.chrome-profile');
+const CHROME_PROFILE_DIR = path.join(PROJECT_ROOT, '.qa', '.chrome-profile');
 
 const DEFAULTS = {
   url: 'http://localhost:5188/',
-  out: path.join(SCRIPT_DIR, 'shots'),
+  out: path.join(PROJECT_ROOT, '.qa', 'shots'),
   width: 1440,
   height: 900,
   prefix: 'desktop',

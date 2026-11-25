@@ -16,11 +16,12 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..', '..');
 
 function parseArgs(argv) {
   const opts = {
-    dir: path.join(SCRIPT_DIR, 'shots'),
-    out: path.join(SCRIPT_DIR, 'contact-sheet.html'),
+    dir: path.join(PROJECT_ROOT, '.qa', 'shots'),
+    out: path.join(PROJECT_ROOT, '.qa', 'contact-sheet.html'),
   };
   for (const raw of argv) {
     if (raw === '--help' || raw === '-h') {

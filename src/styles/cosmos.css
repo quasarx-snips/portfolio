@@ -68,13 +68,20 @@
   height: 100%;
 }
 
-/* Visitor escape hatch from the press-and-hold prologue. */
+/* Visitor escape hatch from the press-and-hold prologue. It sits above the
+   prologue overlay (which owns z-index 60), otherwise the stage paints over it
+   and the button is unreachable — which is exactly what a phone needs. */
 .cosmos-skip {
-  position: absolute;
+  position: fixed;
   top: max(18px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
-  z-index: 9;
+  z-index: 61;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 16px;
+  opacity: 0;
+  animation: cosmos-skip-in 520ms ease-out 120ms forwards;
   border: 1px solid rgba(240, 232, 210, 0.35);
   border-radius: 2px;
   background: rgba(6, 4, 10, 0);
@@ -91,6 +98,24 @@
   background: rgba(6, 4, 10, 0.35);
   color: #f6f2e9;
   outline: none;
+}
+
+@keyframes cosmos-skip-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* A phone has no room for a pill half the width of the screen. */
+@media (max-width: 760px) {
+  .cosmos-skip {
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    min-height: 42px;
+    padding: 8px 13px;
+    font-size: 0.62rem;
+    letter-spacing: 0.11em;
+  }
 }
 
 /* Press feedback: an almost invisible vignette closes in while charging. The
@@ -265,16 +290,20 @@
       rgba(0, 0, 0, 0.86) calc(var(--hole, 28vmin) * 0.5),
       rgba(0, 0, 0, 0) calc(var(--hole, 28vmin) * 0.515)
     ),
-    /* secondary arc under the shadow */
+    /* secondary arc under the shadow. Offsets are in --hole units, not box
+       percentages: the fallback has to keep its parts attached to the horizon
+       when a phone shrinks it to a fifth of the frame. */
     radial-gradient(
-      ellipse calc(var(--hole, 28vmin) * 0.56) calc(var(--hole, 28vmin) * 0.15) at 50% 62%,
+      ellipse calc(var(--hole, 28vmin) * 0.56) calc(var(--hole, 28vmin) * 0.15)
+        at 50% calc(50% + var(--hole, 28vmin) * 0.55),
       rgba(255, 190, 110, 0) 0%,
       rgba(255, 205, 145, 0.34) 55%,
       rgba(214, 126, 48, 0) 78%
     ),
     /* lensed halo over the top, outside the horizon */
     radial-gradient(
-      ellipse calc(var(--hole, 28vmin) * 0.6) calc(var(--hole, 28vmin) * 0.43) at 50% 41%,
+      ellipse calc(var(--hole, 28vmin) * 0.6) calc(var(--hole, 28vmin) * 0.43)
+        at 50% calc(50% - var(--hole, 28vmin) * 0.41),
       rgba(255, 236, 202, 0.5) 0%,
       rgba(244, 186, 110, 0.3) 42%,
       rgba(178, 96, 38, 0.12) 68%,
