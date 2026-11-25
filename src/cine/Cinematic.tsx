@@ -12,6 +12,7 @@ import PointerCamera from './PointerCamera';
 import Smoke from './scenes/Smoke';
 import TempleDoor from './scenes/TempleDoor';
 import Chapters from './Chapters';
+import { setFilm } from '../audio/engine';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -115,6 +116,10 @@ export default function Cinematic() {
       context.revert();
     };
   }, [film, reduced, tall]);
+
+  // The score rides the same playhead as the image: one number per frame,
+  // throttled inside the engine, so scrubbing and reversing stay in tune.
+  useLayoutEffect(() => film.subscribe((frame) => setFilm(frame.p)), [film]);
 
   useLayoutEffect(() => {
     if (!import.meta.env.DEV) return;

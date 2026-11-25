@@ -15,6 +15,27 @@ interface PalaceDevHook {
   rooms: () => string[];
 }
 
+interface PalaceAudioHook {
+  /** The real state of the AudioContext, or 'unbuilt' before the first gesture. */
+  state: () => AudioContextState | 'unbuilt';
+  /** Which section currently owns the score. */
+  mode: () => 'prologue' | 'film' | 'corridor';
+  /** How many playhead updates the engine has received (wiring check). */
+  filmCalls: () => number;
+  setFilm: (p: number) => void;
+  setRoom: (depth: number, index: number) => void;
+  /** RMS of the master output, sampled from the analyser. */
+  level: () => number;
+  /** Absolute peak of the master output, for clipping checks. */
+  peak: () => number;
+  /** Strongest partial between 240 and 950 Hz, in Hz. */
+  tone: () => number;
+  /** The mix the engine is currently applying. */
+  mix: () => unknown;
+  enable: () => Promise<void>;
+  disable: () => void;
+}
+
 declare global {
   interface Window {
     /**
@@ -23,6 +44,8 @@ declare global {
      * present in production builds.
      */
     __palace?: Partial<PalaceDevHook>;
+    /** Development-only score inspection, for the audio QA harness. */
+    __palaceAudio?: PalaceAudioHook;
   }
 }
 

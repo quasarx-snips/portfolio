@@ -1,0 +1,103 @@
+/* ------------------------------------------------------------- sound */
+
+/*
+ * One chip, bottom-left, above every layer including the prologue. It has to
+ * stay legible on the film's paper as well as on the black hole, so it carries
+ * its own dark ground instead of borrowing the scene's ink.
+ */
+.sound-control {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 9px 15px;
+  border: 1px solid rgba(240, 232, 210, 0.16);
+  border-radius: 999px;
+  background: rgba(10, 8, 14, 0.34);
+  color: rgba(246, 242, 233, 0.86);
+  font-family: var(--serif);
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: background 320ms ease, border-color 320ms ease, color 320ms ease;
+}
+
+.sound-control:hover,
+.sound-control:focus-visible {
+  border-color: rgba(216, 168, 107, 0.55);
+  background: rgba(10, 8, 14, 0.5);
+  color: #f6f2e9;
+}
+
+.sound-control:focus-visible {
+  outline: 1px solid rgba(216, 168, 107, 0.75);
+  outline-offset: 3px;
+}
+
+.sound-control__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(246, 242, 233, 0.22);
+  transition: background 320ms ease, box-shadow 320ms ease;
+}
+
+.sound-control[aria-pressed='true'] .sound-control__dot {
+  background: var(--gold-200);
+}
+
+/* Only a running score glows; a suspended one stays a plain gold dot. */
+.sound-control[data-live='true'] .sound-control__dot {
+  animation: sound-breathe 3.4s ease-in-out infinite;
+}
+
+.sound-control__state {
+  color: rgba(246, 242, 233, 0.42);
+  transition: color 320ms ease;
+}
+
+.sound-control[aria-pressed='true'] .sound-control__state {
+  color: rgba(216, 168, 107, 0.85);
+}
+
+@keyframes sound-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(216, 168, 107, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 8px 1px rgba(216, 168, 107, 0.55);
+  }
+}
+
+@media (max-width: 760px) {
+  .sound-control {
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    padding: 8px 13px;
+    font-size: 0.56rem;
+    letter-spacing: 0.2em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-control,
+  .sound-control__dot,
+  .sound-control__state {
+    transition: none;
+  }
+
+  .sound-control[data-live='true'] .sound-control__dot {
+    animation: none;
+    box-shadow: 0 0 6px 1px rgba(216, 168, 107, 0.45);
+  }
+}

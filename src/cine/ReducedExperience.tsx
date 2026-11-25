@@ -18,6 +18,7 @@ import Narrative from './scenes/Narrative';
 import Smoke from './scenes/Smoke';
 import TempleDoor from './scenes/TempleDoor';
 import { useViewMode } from './useViewMode';
+import { setFilm } from '../audio/engine';
 import '../styles/reduced.css';
 
 /**
@@ -77,6 +78,33 @@ function useFadeIn() {
 export default function ReducedExperience() {
   const { tall, narrow } = useViewMode();
   const rootRef = useFadeIn();
+
+  // The score follows the act being read, from the same stills the acts are
+  // composed from: the reduced journey hears the same film, just held.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const acts = Array.from(root.querySelectorAll<HTMLElement>('.rm-act'));
+    const stills = [BEGINNING_P, IDENTITY_P, DISSOLUTION_P, THRESHOLD_P, 1];
+    if (typeof IntersectionObserver === 'undefined') {
+      setFilm(THRESHOLD_P);
+      return;
+    }
+    // The middle band of the viewport, not 50% of a tall section: the white
+    // act is shorter than the others and a phone shows less of each.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const p = stills[acts.indexOf(entry.target as HTMLElement)];
+          if (p !== undefined) setFilm(p);
+        }
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    for (const act of acts) observer.observe(act);
+    return () => observer.disconnect();
+  }, [rootRef]);
 
   return (
     <div className="rm-experience" ref={rootRef}>

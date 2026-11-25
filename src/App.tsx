@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import SoundControl from './audio/SoundControl';
 import CosmicOpening from './cine/cosmos/CosmicOpening';
 import { useViewMode } from './cine/useViewMode';
 import './styles/cinematic.css';
@@ -104,6 +105,7 @@ export default function App() {
           </div>
         </section>
       )}
+      <SoundControl />
     </main>
   );
 }

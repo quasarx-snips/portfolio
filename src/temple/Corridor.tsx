@@ -3,6 +3,7 @@ import CorridorHud from './CorridorHud';
 import RoomView from './Room';
 import { corridorProgress, isNear, readCorridor, roomPose, smoothstep } from './geometry';
 import { KIND_LABEL, ROOMS, roomIndex } from './rooms';
+import { releaseHall, setRoom } from '../audio/engine';
 import '../styles/corridor.css';
 
 const COUNT = ROOMS.length;
@@ -93,6 +94,20 @@ export default function Corridor() {
         }
         node.style.transform = `translate3d(0, ${pose.drift.toFixed(2)}px, 0)`;
         node.style.opacity = pose.opacity.toFixed(3);
+      }
+
+      // The hall owns the score only once it owns the screen: the section must
+      // have reached the top of the viewport, and, coming from the film, the
+      // visitor must be past the seam itself. The frame's last word belongs to
+      // the corridor's first bay; the film keeps the seam.
+      const live = root.getBoundingClientRect();
+      const entered = fromFilm ? scrollTop > 0.5 : scrollTop >= -1;
+      if (entered && live.top <= 0 && live.bottom > 0) {
+        setRoom(frame.depth, frame.index);
+      } else if (scrollTop < -0.5) {
+        // Above the seam the film has the score again, including the settle of
+        // its scrub, which keeps reporting the last frame.
+        releaseHall();
       }
 
       if (barRef.current) {
