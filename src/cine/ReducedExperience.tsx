@@ -16,7 +16,9 @@ import Identity from './scenes/Identity';
 import World from './scenes/World';
 import Narrative from './scenes/Narrative';
 import Smoke from './scenes/Smoke';
+import TempleDoor from './scenes/TempleDoor';
 import { useViewMode } from './useViewMode';
+import { setFilm } from '../audio/engine';
 import '../styles/reduced.css';
 
 /**
@@ -27,6 +29,7 @@ import '../styles/reduced.css';
 const BEGINNING_P = 0.2;
 const IDENTITY_P = 0.66;
 const DISSOLUTION_P = 0.86;
+const THRESHOLD_P = 0.96;
 
 /**
  * One still frame of the film. `Film` computes its frame in the constructor
@@ -75,6 +78,33 @@ function useFadeIn() {
 export default function ReducedExperience() {
   const { tall, narrow } = useViewMode();
   const rootRef = useFadeIn();
+
+  // The score follows the act being read, from the same stills the acts are
+  // composed from: the reduced journey hears the same film, just held.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const acts = Array.from(root.querySelectorAll<HTMLElement>('.rm-act'));
+    const stills = [BEGINNING_P, IDENTITY_P, DISSOLUTION_P, THRESHOLD_P, 1];
+    if (typeof IntersectionObserver === 'undefined') {
+      setFilm(THRESHOLD_P);
+      return;
+    }
+    // The middle band of the viewport, not 50% of a tall section: the white
+    // act is shorter than the others and a phone shows less of each.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const p = stills[acts.indexOf(entry.target as HTMLElement)];
+          if (p !== undefined) setFilm(p);
+        }
+      },
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    for (const act of acts) observer.observe(act);
+    return () => observer.disconnect();
+  }, [rootRef]);
 
   return (
     <div className="rm-experience" ref={rootRef}>
@@ -139,7 +169,20 @@ export default function ReducedExperience() {
         </StaticFilm>
       </section>
 
-      {/* Act IV — White: the held endpoint, no text, no interface. */}
+      {/*
+        Act IV — The Threshold: the door the rooms begin behind, held as a
+        still. Same plate, same paper, no motion beyond the single fade.
+      */}
+      <section className="rm-act rm-act--threshold">
+        <h2 className="sr-only">The Threshold</h2>
+        <StaticFilm p={THRESHOLD_P}>
+          <div className="rm-scene rm-reveal">
+            <TempleDoor />
+          </div>
+        </StaticFilm>
+      </section>
+
+      {/* Act V — White: the held endpoint, no text, no interface. */}
       <section className="rm-act rm-act--white" aria-hidden="true">
         <div className="rm-white-surface" />
       </section>

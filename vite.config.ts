@@ -6,7 +6,9 @@ export default defineConfig({
   server: {
     port: 5188,
     strictPort: true,
-    watch: { ignored: ['**/.qa/**', '**/.tmp/**'] },
+    // The editor writes files through staged temp dirs; watching those makes
+    // the Windows watcher throw EBUSY when the dir is renamed away.
+    watch: { ignored: ['**/.qa/**', '**/.tmp/**', '**/*.tmpdir/**', '**/*~RF*', '**/*.TMP'] },
   },
   build: {
     target: 'es2020',

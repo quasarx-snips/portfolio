@@ -10,7 +10,9 @@ import World from './scenes/World';
 import Narrative from './scenes/Narrative';
 import PointerCamera from './PointerCamera';
 import Smoke from './scenes/Smoke';
+import TempleDoor from './scenes/TempleDoor';
 import Chapters from './Chapters';
+import { setFilm } from '../audio/engine';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -51,9 +53,9 @@ export default function Cinematic() {
           scrimRef.current.style.opacity = (0.3 + 0.55 * clear).toFixed(3);
         }
         if (cueRef.current) {
-          // Always present, except where the closing whiteout would otherwise
-          // show it faintly through the white.
-          cueRef.current.style.opacity = (1 - smoothstep(frame.white, 0.2, 0.6)).toFixed(3);
+          // Always present, except over the door: by the threshold there is
+          // nothing left to instruct.
+          cueRef.current.style.opacity = (1 - smoothstep(frame.p, 0.83, 0.89)).toFixed(3);
         }
       }),
     [film],
@@ -115,6 +117,10 @@ export default function Cinematic() {
     };
   }, [film, reduced, tall]);
 
+  // The score rides the same playhead as the image: one number per frame,
+  // throttled inside the engine, so scrubbing and reversing stay in tune.
+  useLayoutEffect(() => film.subscribe((frame) => setFilm(frame.p)), [film]);
+
   useLayoutEffect(() => {
     if (!import.meta.env.DEV) return;
     window.__palace = {
@@ -152,6 +158,7 @@ export default function Cinematic() {
           <div className="world-scrim" ref={scrimRef} aria-hidden="true" />
           <Narrative />
           <Identity />
+          <TempleDoor />
           <Smoke part="front" mobile={narrow} />
           <div className="whiteout" ref={whiteRef} aria-hidden="true" />
           <div className="scroll-thread" ref={threadRef} aria-hidden="true" />
