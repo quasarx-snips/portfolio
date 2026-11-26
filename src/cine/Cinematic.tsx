@@ -27,6 +27,21 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 const TRAVEL_DESKTOP = 30;
 const TRAVEL_PORTRAIT = 22;
 
+/**
+ * The film's own clock.
+ *
+ * Scroll is linear; the frame is not. The threshold is the one beat that waits
+ * for the reader: p slows almost to a stop as the door arrives, and holds there
+ * for about a viewport and a half of scrolling, so the door can be seen, read
+ * and opened before the white takes the frame. Everything else runs on scroll.
+ */
+const filmTime = (t: number): number => {
+  if (t <= 0.86) return t;
+  if (t <= 0.92) return 0.86 + ((t - 0.86) / 0.06) * 0.08;
+  if (t <= 0.97) return 0.94 + ((t - 0.92) / 0.05) * 0.01;
+  return 0.95 + ((t - 0.97) / 0.03) * 0.05;
+};
+
 export default function Cinematic() {
   const { tall, narrow, reduced } = useViewMode();
   const filmRef = useRef<Film | null>(null);
@@ -77,7 +92,7 @@ export default function Cinematic() {
       const tween = gsap.to(proxy, {
         p: 1,
         duration: 1,
-        ease: 'none',
+        ease: filmTime,
         paused: true,
         onUpdate: () => {
           if (!forcedRef.current) film.set(proxy.p);
