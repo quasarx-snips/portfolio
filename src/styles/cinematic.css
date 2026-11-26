@@ -245,6 +245,7 @@ html::-webkit-scrollbar {
  */
 .temple-door__fog {
   position: absolute;
+  z-index: 4;
   inset: auto 0 0 0;
   height: 26%;
   overflow: hidden;
@@ -340,8 +341,322 @@ html::-webkit-scrollbar {
  * reached, all widened by the single --spill the pointer eases. So the leaves
  * darken from the side the hand arrived on, and drain back to it.
  */
+/* ------------------------------------------------------------ the doorway */
+
+/*
+ * What the leaves open onto: the dark of the sanctum, lit low as if from a
+ * lamp on the floor, so the door reads as depth rather than a hole cut in the
+ * paper. It sits over the painted leaves and under the hinged ones, and is
+ * invisible until the swing brings it up.
+ */
+.temple-door__inside {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 2px;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/*
+ * The room behind the leaves: a lamp on the floor of a stone sanctum, its
+ * light climbing the wall, the jambs dark where the wall is thick. It is set
+ * a little deeper than the opening and settles back as the leaves come round,
+ * so the doorway has depth rather than a poster in it.
+ */
+.temple-door__depth {
+  position: absolute;
+  inset: 0;
+  background-color: #0f0906;
+  background-image:
+    /* the soffit: the top of the opening is in shadow, not cut out */
+    linear-gradient(to bottom, rgba(3, 2, 1, 0.95), rgba(3, 2, 1, 0) 13%),
+    /* the jambs: the thickness of the wall on either side */
+    linear-gradient(to right, rgba(3, 2, 1, 0.8), rgba(3, 2, 1, 0) 6%),
+    linear-gradient(to left, rgba(3, 2, 1, 0.8), rgba(3, 2, 1, 0) 6%),
+    /* the flame, then the light it throws */
+    radial-gradient(
+      ellipse 4% 3% at 50% 81%,
+      rgba(255, 250, 232, 1),
+      rgba(255, 218, 160, 0.92) 42%,
+      rgba(255, 190, 116, 0) 100%
+    ),
+    radial-gradient(
+      ellipse 56% 36% at 50% 82%,
+      rgba(255, 190, 122, 0.55),
+      rgba(255, 172, 94, 0.22) 44%,
+      rgba(255, 160, 80, 0) 72%
+    ),
+    /* the floor, and the wall standing behind the lamp */
+    linear-gradient(
+      to bottom,
+      rgba(255, 176, 108, 0) 79%,
+      rgba(96, 58, 32, 0.5) 82%,
+      rgba(52, 32, 18, 0.35) 100%
+    ),
+    linear-gradient(to bottom, #0a0604 0%, #150d08 55%, #291a0e 82%, #33200f 100%);
+  box-shadow:
+    inset 0 8px 16px rgba(0, 0, 0, 0.85),
+    inset 0 -14px 30px rgba(0, 0, 0, 0.4);
+  transform: scale(1.06);
+  transform-origin: 50% 42%;
+  will-change: transform;
+}
+
+/* Incense in the lamp light: the same veil as the steps, a little warmer. */
+.temple-door__depth::after {
+  content: '';
+  position: absolute;
+  left: -30%;
+  bottom: -10%;
+  width: 160%;
+  height: 68%;
+  background: radial-gradient(
+    ellipse 42% 54% at 38% 62%,
+    rgba(255, 196, 138, 0.22),
+    rgba(255, 186, 120, 0) 70%
+  );
+  filter: blur(10px);
+  animation: temple-inside-haze 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes temple-inside-haze {
+  from {
+    transform: translate3d(-4%, 2%, 0) scale(1);
+    opacity: 0.55;
+  }
+
+  to {
+    transform: translate3d(5%, -4%, 0) scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+.temple-door__glow {
+  position: absolute;
+  left: 50%;
+  bottom: -6%;
+  width: 150%;
+  height: 42%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 50% 56% at 50% 62%,
+    rgba(255, 248, 230, 0.85),
+    rgba(255, 214, 160, 0.42) 46%,
+    rgba(255, 186, 112, 0) 74%
+  );
+  filter: blur(7px);
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* Dust in the lamp light, rising out of the doorway once it is open. */
+.temple-door__motes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.temple-door__motes span {
+  position: absolute;
+  bottom: 16%;
+  left: 50%;
+  width: 3%;
+  padding-bottom: 3%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 242, 216, 0.95), rgba(255, 208, 150, 0) 72%);
+  opacity: 0;
+  animation: temple-mote 11s linear infinite;
+  will-change: transform, opacity;
+}
+
+.temple-door__motes span:nth-child(1) {
+  left: 34%;
+  animation-duration: 10s;
+  animation-delay: -2.4s;
+}
+
+.temple-door__motes span:nth-child(2) {
+  left: 47%;
+  animation-duration: 13s;
+  animation-delay: -6.1s;
+}
+
+.temple-door__motes span:nth-child(3) {
+  left: 58%;
+  animation-duration: 9s;
+  animation-delay: -4.3s;
+}
+
+.temple-door__motes span:nth-child(4) {
+  left: 67%;
+  animation-duration: 15s;
+  animation-delay: -8.6s;
+}
+
+.temple-door__motes span:nth-child(5) {
+  left: 41%;
+  animation-duration: 12s;
+  animation-delay: -10.2s;
+}
+
+@keyframes temple-mote {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 0;
+  }
+
+  14% {
+    opacity: 0.9;
+  }
+
+  68% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: translate3d(90%, -1500%, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/*
+ * The bloom: the doorway's light in the air and on the casing around it. It
+ * sits over the paint and under the leaves, so the frame it spills over is
+ * still the frame.
+ */
+.temple-door__bloom {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 40% 34% at 50% 54%,
+    rgba(255, 226, 184, 0.6),
+    rgba(255, 198, 136, 0.3) 44%,
+    rgba(255, 176, 96, 0) 74%
+  );
+  mix-blend-mode: screen;
+  filter: blur(5px);
+  will-change: opacity;
+}
+
+/*
+ * The leaves as they open: two hinged halves, each carrying the whole plate
+ * inside it and clipping the rest, so the paint hinges without being cut. The
+ * backs are plain boards, which is all the swing ever shows of them.
+ */
+.temple-door__leaves {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  perspective: 620px;
+  perspective-origin: 50% 65%;
+}
+
+.temple-door__leaf {
+  position: absolute;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.temple-door__leaf--left {
+  transform-origin: 0% 50%;
+}
+
+.temple-door__leaf--right {
+  transform-origin: 100% 50%;
+}
+
+.temple-door__face,
+.temple-door__back {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.temple-door__half {
+  position: absolute;
+}
+
+.temple-door__back {
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.28) 0 1.5px,
+      rgba(255, 255, 255, 0.03) 1.5px 3px,
+      rgba(0, 0, 0, 0) 3px 11px
+    ),
+    linear-gradient(to bottom, #3a2417 0%, #24150d 62%, #170d08 100%);
+  box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.6);
+}
+
+/*
+ * The face turns away from the light as it swings, so it darkens with it, and
+ * deepest at the free edge, which is furthest from the hinge and the daylight.
+ */
+.temple-door__shade {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 6, 3, 0.8) 0%,
+    rgba(18, 9, 4, 0.35) 42%,
+    rgba(10, 5, 2, 0.72) 100%
+  );
+  will-change: opacity;
+}
+
+.temple-door__leaf--left .temple-door__shade {
+  background-image:
+    linear-gradient(to right, rgba(10, 5, 2, 0.1), rgba(8, 4, 2, 0.62)),
+    linear-gradient(to bottom, rgba(12, 6, 3, 0.55), rgba(12, 6, 3, 0.2) 40%, rgba(10, 5, 2, 0.5));
+}
+
+.temple-door__leaf--right .temple-door__shade {
+  background-image:
+    linear-gradient(to left, rgba(10, 5, 2, 0.1), rgba(8, 4, 2, 0.62)),
+    linear-gradient(to bottom, rgba(12, 6, 3, 0.55), rgba(12, 6, 3, 0.2) 40%, rgba(10, 5, 2, 0.5));
+}
+
+/* The leaf is a board, not a sheet: its free edge has thickness. */
+.temple-door__leaf--left .temple-door__face {
+  box-shadow: inset -3px 0 5px rgba(0, 0, 0, 0.55);
+}
+
+.temple-door__leaf--right .temple-door__face {
+  box-shadow: inset 3px 0 5px rgba(0, 0, 0, 0.55);
+}
+
+/*
+ * The lamp inside reaches the steps: a warm wash on the threshold, so the
+ * opening lights the ground in front of it instead of stopping at the sill.
+ */
+.temple-door__leak {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    ellipse 46% 62% at 50% 0%,
+    rgba(255, 188, 120, 0.5),
+    rgba(255, 178, 104, 0.22) 44%,
+    rgba(255, 178, 104, 0) 76%
+  );
+  /* Light adds to the step, it does not stain it. */
+  mix-blend-mode: screen;
+  filter: blur(3px);
+  will-change: opacity;
+}
+
 .temple-door__warm {
   position: absolute;
+  z-index: 1;
   overflow: hidden;
   pointer-events: none;
   opacity: var(--warm, 0);
@@ -372,8 +687,47 @@ html::-webkit-scrollbar {
   }
 }
 
+/*
+ * The door is the control: a bare hit target over the leaves, live only once
+ * the plate is on screen. It carries no paint of its own, so the leaves can
+ * still be the door.
+ */
+.temple-door__knock {
+  position: absolute;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
+  cursor: default;
+}
+
+.temple-door__knock {
+  visibility: hidden;
+}
+
+.temple-door.is-live .temple-door__knock {
+  pointer-events: auto;
+  cursor: pointer;
+  visibility: visible;
+}
+
+.temple-door__knock:focus-visible {
+  outline: 2px solid rgba(198, 138, 78, 0.95);
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .temple-door__fog > span {
+    animation: none;
+  }
+
+  .temple-door__depth::after,
+  .temple-door__motes span {
     animation: none;
   }
 }
