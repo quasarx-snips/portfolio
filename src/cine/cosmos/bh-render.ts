@@ -420,9 +420,12 @@ void main() {
   vec3 right = normalize(cross(fwd, vec3(0.0, 1.0, 0.0)));
   vec3 up = cross(right, fwd);
 
-  // Portrait screens get a slightly longer lens so the hole keeps the framing
-  // that the host's CSS hint ring assumes.
-  float focal = FOCAL0 * (1.0 + 0.55 * max(0.0, 1.0 - uAspect));
+  // The frame is composed by its width, not its height: the tableau is wide, so
+  // a portrait screen pulls the camera back instead of cropping the disk to the
+  // hole and running the ring off both edges. Framing is normalised against a
+  // 16:10 reference (focal = FOCAL0 there) and widens gently below it.
+  float framing = min(1.0, pow(uAspect / 1.6, 0.85));
+  float focal = FOCAL0 * framing;
   // Screen radius of the shadow (b_crit at this camera distance), used for the
   // bloom that gathers on the rim as the fall lights up.
   float shAng = asin(clamp(B_CRIT * sqrt(max(1.0 - RS / rCam, 0.0)) / rCam, 0.0, 1.0));

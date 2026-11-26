@@ -317,8 +317,12 @@ export default function CosmicOpening({ onCovered }: { onCovered?: () => void })
       const width = Math.max(stage.clientWidth, 1);
       const height = Math.max(stage.clientHeight, 1);
       const aspect = width / height;
-      const radiusInHeights = 0.14 * (1 + 0.55 * Math.max(0, 1 - aspect));
-      stage.style.setProperty('--hole', `${Math.round(radiusInHeights * height * 2)}px`);
+      // Same width-first framing as the shader (16:10 reference, 0.85 curve):
+      // a portrait stage pulls the camera back, so the published horizon — and
+      // the hint ring built from it — shrinks with the disk instead of spilling
+      // past the edges of a phone.
+      const framing = Math.min(1, Math.pow(aspect / 1.6, 0.85));
+      stage.style.setProperty('--hole', `${Math.round(0.14 * framing * height * 2)}px`);
     };
 
     // Resolution is a budget, not a constant: the tier fixes the ceiling, the
@@ -907,9 +911,13 @@ export default function CosmicOpening({ onCovered }: { onCovered?: () => void })
 
   return (
     <>
-      <button type="button" className="cosmos-skip" onClick={() => skipToEnd()}>
-        Skip the opening
-      </button>
+      {/* The escape hatch arrives with the idle ring, so the first frame stays
+          nothing but the hole. */}
+      {phase === 'idle' && hinting ? (
+        <button type="button" className="cosmos-skip" onClick={() => skipToEnd()}>
+          Skip the opening
+        </button>
+      ) : null}
       <section
         className={`cosmos cosmos--${phase}${hinting ? ' is-hinting' : ''}${fallback ? ' is-fallback' : ''}`}
         ref={rootRef}
